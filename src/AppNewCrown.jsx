@@ -491,7 +491,7 @@ export default function App() {
   return (
     <div className="app">
       <div className="game-card">
-        <h1>📚 New Crown Typing</h1>
+        <h1>👑New Crown Typing</h1>
 
         <div className="button-row">
           <button

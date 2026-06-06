@@ -18,7 +18,7 @@ export default function App() {
         }}
       >
         <button onClick={() => setTab("newcrown")}>
-          📚 NewCrown
+          👑NewCrown
         </button>
 
         <button onClick={() => setTab("words")}>
