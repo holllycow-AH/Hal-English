@@ -492,7 +492,26 @@ export default function App() {
     <div className="app">
       <div className="game-card">
         <h1>👑New Crown Typing</h1>
-
+<div className="button-row">
+  <a
+    href="/downloads/NewCrown_MP3.zip"
+    download
+    style={{
+      background: "#9333ea",
+      color: "white",
+      padding: "10px 14px",
+      borderRadius: "12px",
+      textDecoration: "none",
+      fontWeight: "bold",
+      fontSize: "15px",
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "6px",
+    }}
+  >
+    📦 MP3全部ダウンロード
+  </a>
+</div>
         <div className="button-row">
           <button
             onClick={() => {

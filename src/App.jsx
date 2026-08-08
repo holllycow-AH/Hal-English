@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AppWords from "./AppWords";
 import AppNewCrown from "./AppNewCrown";
+import AppIrregular from "./AppIrregular";
 import "./App.css";
 
 export default function App() {
@@ -24,9 +25,14 @@ export default function App() {
         <button onClick={() => setTab("words")}>
           🔤 単語250
         </button>
+        <button onClick={() => setTab("irregular")}>
+　　　　　　📖 不規則動詞
+</button>
       </div>
-
-      {tab === "newcrown" ? <AppNewCrown /> : <AppWords />}
+{tab === "newcrown" && <AppNewCrown />}
+{tab === "words" && <AppWords />}
+{tab === "irregular" && <AppIrregular />}
+      
     </div>
   );
 }
