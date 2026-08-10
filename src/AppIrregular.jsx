@@ -41,44 +41,47 @@ export default function AppIrregular() {
   const [participle, setParticiple] = useState("");
 
   const [completedCount, setCompletedCount] = useState(0);
-const [helpField, setHelpField] = useState(null);
+  const [helpField, setHelpField] = useState(null);
+
   const baseRef = useRef(null);
   const pastRef = useRef(null);
   const participleRef = useRef(null);
 
   const current = verbs[currentIndex];
-  
-const playFireSound = (level) => {
-const audio = new Audio("/sounds/mixkit-arrow-whoosh-1491.wav");
 
-  if (level === 1) audio.volume = 0.75;
-  if (level === 2) audio.volume = 0.85;
-  if (level === 3) audio.volume = 0.99;
+  const playFireSound = (level) => {
+    const audio = new Audio("/sounds/mixkit-arrow-whoosh-1491.wav");
 
-  audio.play().catch(() => {});
-};
-const speakForms = (base, past, participle) => {
-  const voices = speechSynthesis.getVoices();
+    if (level === 1) audio.volume = 0.15;
+    if (level === 2) audio.volume = 0.25;
+    if (level === 3) audio.volume = 0.4;
 
-  const voice =
-    voices.find((v) => v.name === "Google US English") ||
-    voices.find((v) => v.lang === "en-US");
+    audio.play().catch(() => {});
+  };
 
-  const text = `${base}, ${past}, ${participle}`;
+  const speakForms = (baseWord, pastWord, participleWord) => {
+    const voices = speechSynthesis.getVoices();
 
-  const utterance = new SpeechSynthesisUtterance(text);
+    const voice =
+      voices.find((v) => v.name === "Google US English") ||
+      voices.find((v) => v.lang === "en-US");
 
-  if (voice) {
-    utterance.voice = voice;
-  }
+    const text = `${baseWord}, ${pastWord}, ${participleWord}`;
 
-  utterance.lang = "en-US";
-  utterance.rate = 0.85;
-  utterance.pitch = 1;
+    const utterance = new SpeechSynthesisUtterance(text);
 
-  speechSynthesis.cancel();
-  speechSynthesis.speak(utterance);
-};
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    utterance.lang = "en-US";
+    utterance.rate = 0.85;
+    utterance.pitch = 1;
+
+    speechSynthesis.cancel();
+    speechSynthesis.speak(utterance);
+  };
+
   useEffect(() => {
     baseRef.current?.focus();
   }, [currentIndex]);
@@ -89,6 +92,7 @@ const speakForms = (base, past, participle) => {
       setPast("");
       setParticiple("");
       setCompletedCount(0);
+      setHelpField(null);
 
       setCurrentIndex((prev) => {
         if (prev === verbs.length - 1) {
@@ -100,6 +104,13 @@ const speakForms = (base, past, participle) => {
     }, 2600);
   };
 
+  const handleZeroHelp = (event, field) => {
+    if (event.key === "0") {
+      event.preventDefault();
+      setHelpField(field);
+    }
+  };
+
   return (
     <div
       style={{
@@ -109,11 +120,7 @@ const speakForms = (base, past, participle) => {
         margin: "0 auto",
       }}
     >
-      <h1
-        style={{
-          marginBottom: "8px",
-        }}
-      >
+      <h1 style={{ marginBottom: "8px" }}>
         ⚡ 不規則動詞
       </h1>
 
@@ -143,7 +150,9 @@ const speakForms = (base, past, participle) => {
             style={{
               display: "inline-block",
               transform:
-                completedCount > index ? "scale(1.15)" : "scale(1)",
+                completedCount > index
+                  ? "scale(1.15)"
+                  : "scale(1)",
               transition: "all 0.15s ease",
             }}
           >
@@ -172,6 +181,16 @@ const speakForms = (base, past, participle) => {
         {current.japanese}
       </h2>
 
+      <p
+        style={{
+          color: "#999",
+          fontSize: "16px",
+          marginBottom: "24px",
+        }}
+      >
+        わからない時は 0 キーでヒント
+      </p>
+
       <div
         style={{
           display: "flex",
@@ -181,49 +200,32 @@ const speakForms = (base, past, participle) => {
         }}
       >
         <div>
-<div>
-  <p style={labelStyle}>① 原形</p>
+          <p style={labelStyle}>① 原形</p>
 
-  <input
-    ref={baseRef}
-    value={base}
-    style={inputStyle}
-    onKeyDown={(e) => {
-      if (e.key === "0") {
-        e.preventDefault();
-        setHelpField("base");
-      }
-    }}
-    onChange={(e) => {
-      const value = e.target.value.replaceAll("0", "");
+          <input
+            ref={baseRef}
+            value={base}
+            placeholder={
+              helpField === "base" ? current.base : ""
+            }
+            style={inputStyle}
+            onKeyDown={(e) => handleZeroHelp(e, "base")}
+            onChange={(e) => {
+              const value = e.target.value.replaceAll("0", "");
+              setBase(value);
 
-      setBase(value);
-
-      if (
-        value.trim().toLowerCase() ===
-        current.base.toLowerCase()
-      ) {
-        setCompletedCount(1);
-        playFireSound(1);
-        setHelpField(null);
-        pastRef.current?.focus();
-      }
-    }}
-  />
-
-{helpField === "base" && (
-  <p
-    style={{
-      color: "#aaa",
-      fontSize: "22px",
-      marginTop: "10px",
-      marginBottom: "0",
-    }}
-  >
-    {current.base}
-  </p>
-)}
-</div>
+              if (
+                value.trim().toLowerCase() ===
+                current.base.toLowerCase()
+              ) {
+                setCompletedCount(1);
+                playFireSound(1);
+                setHelpField(null);
+                pastRef.current?.focus();
+              }
+            }}
+          />
+        </div>
 
         <div>
           <p style={labelStyle}>② 過去形</p>
@@ -231,55 +233,68 @@ const speakForms = (base, past, participle) => {
           <input
             ref={pastRef}
             value={past}
+            placeholder={
+              helpField === "past" ? current.past : ""
+            }
             style={inputStyle}
+            onKeyDown={(e) => handleZeroHelp(e, "past")}
             onChange={(e) => {
-              const value = e.target.value;
+              const value = e.target.value.replaceAll("0", "");
               setPast(value);
 
               if (
                 value.trim().toLowerCase() ===
                 current.past.toLowerCase()
-) {
-setCompletedCount(2);
-playFireSound(2);
-participleRef.current?.focus();
-}
+              ) {
+                setCompletedCount(2);
+                playFireSound(2);
+                setHelpField(null);
+                participleRef.current?.focus();
+              }
             }}
           />
         </div>
 
         <div>
-         <div>
-  <p style={labelStyle}>③ 過去分詞</p>
+          <p style={labelStyle}>③ 過去分詞</p>
 
-  <input
-    ref={participleRef}
-    value={participle}
-    style={inputStyle}
-    onChange={(e) => {
-      const value = e.target.value;
-      setParticiple(value);
+          <input
+            ref={participleRef}
+            value={participle}
+            placeholder={
+              helpField === "participle"
+                ? current.participle
+                : ""
+            }
+            style={inputStyle}
+            onKeyDown={(e) =>
+              handleZeroHelp(e, "participle")
+            }
+            onChange={(e) => {
+              const value = e.target.value.replaceAll("0", "");
+              setParticiple(value);
 
-      if (
-        value.trim().toLowerCase() ===
-        current.participle.toLowerCase()
-      ) {
-        setCompletedCount(3);
-        playFireSound(3);
+              if (
+                value.trim().toLowerCase() ===
+                current.participle.toLowerCase()
+              ) {
+                setCompletedCount(3);
+                playFireSound(3);
+                setHelpField(null);
 
-        setTimeout(() => {
-          speakForms(
-            current.base,
-            current.past,
-            current.participle
-          );
-        }, 250);
+                setTimeout(() => {
+                  speakForms(
+                    current.base,
+                    current.past,
+                    current.participle
+                  );
+                }, 250);
 
-        nextQuestion();
-      }
-    }}
-  />
-</div>
+                nextQuestion();
+              }
+            }}
+          />
+        </div>
       </div>
     </div>
   );
