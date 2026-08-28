@@ -26,9 +26,46 @@ export default function App() {
           🔤 単語250
         </button>
         <button onClick={() => setTab("irregular")}>
-　　　　　　📖 不規則動詞
+　　　　　　📖 動詞活用
 </button>
       </div>
+      {tab === "irregular" && (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: "10px",
+      flexWrap: "wrap",
+      margin: "10px 0 18px",
+      fontSize: "18px",
+    }}
+  >
+    <span style={{ fontWeight: "700" }}>
+      😎🎧 音声ダウンロード
+    </span>
+
+    <a href="/audio/verbs/verbs_print1.mp3" download>
+      📘 プリント①
+    </a>
+
+    <a href="/audio/verbs/verbs_print2.mp3" download>
+      📗 プリント②
+    </a>
+
+    <a href="/audio/verbs/verbs_all.mp3" download>
+      📚 ALL
+    </a>
+
+    <a href="/audio/verbs/verbs_all_rhythm.mp3" download>
+      🥁 RHYTHM
+    </a>
+
+    <a href="/audio/verbs/verbs_all_reggae.mp3" download>
+      🌴🎧 REGGAE
+    </a>
+  </div>
+)}
 {tab === "newcrown" && <AppNewCrown />}
 {tab === "words" && <AppWords />}
 {tab === "irregular" && <AppIrregular />}
