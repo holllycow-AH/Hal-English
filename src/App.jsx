@@ -2,6 +2,7 @@ import { useState } from "react";
 import AppWords from "./AppWords";
 import AppNewCrown from "./AppNewCrown";
 import AppIrregular from "./AppIrregular";
+import AppVerbGame from "./AppVerbGame";
 import "./App.css";
 
 export default function App() {
@@ -68,7 +69,8 @@ export default function App() {
 )}
 {tab === "newcrown" && <AppNewCrown />}
 {tab === "words" && <AppWords />}
-{tab === "irregular" && <AppIrregular />}
+{tab === "irregular" && <AppIrregular onStartGame={() => setTab("verbGame")} />}
+{tab === "verbGame" && <AppVerbGame onBack={() => setTab("irregular")} />}
       
     </div>
   );

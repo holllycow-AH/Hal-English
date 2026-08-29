@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const verbs = [
+export const verbs = [
   // ========================================
   // プリント① 規則動詞 1〜40
   // ========================================
@@ -116,7 +116,7 @@ const verbs = [
   { sheet: 2, number: 48, japanese: "書く", base: "write", past: "wrote", participle: "written" },
 ];
 
-export default function AppIrregular() {
+export default function AppIrregular({ onStartGame }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 const [selectedSheet, setSelectedSheet] = useState(1);
 const [rangeStart, setRangeStart] = useState(1);
@@ -305,7 +305,24 @@ const handleZeroHelp = (event, field, word) => {
       }}
     >
       
-
+{/* GAME MODE */}
+<div style={{ margin: "6px 0 22px" }}>
+  <button
+   onClick={onStartGame}
+    style={{
+      padding: "12px 32px",
+      fontSize: "20px",
+      fontWeight: "700",
+      borderRadius: "12px",
+      border: "2px solid #222",
+      background: "#fff",
+      color: "#222",
+      cursor: "pointer",
+    }}
+  >
+   🎮 GAME 15
+  </button>
+</div>
 
 <div
   style={{
@@ -400,6 +417,7 @@ style={{
     ))}
   </div>
 </div>
+
       {/* 現在地 + HELP */}
 <div
   style={{
