@@ -60,6 +60,7 @@ if (activeBattle === "FINAL") {
   if (activeBattle === "PHRASE") {
   return (
     <EikenPhraseBattle
+      stage={activeStage}
       onBack={() => setActiveBattle(null)}
     />
   );

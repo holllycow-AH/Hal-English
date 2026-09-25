@@ -83,6 +83,85 @@ const QUESTIONS = [
   },
 ];
 
+const STAGE2_QUESTIONS = [
+  {
+    type: "japanese",
+    prompt: "〜を探す",
+    parts: ["look", "for", "like", "go"],
+    answer: ["look", "for"],
+    translation: "〜を探す",
+  },
+  {
+    type: "context",
+    prompt: "We ________ at the party.",
+    parts: ["had", "a", "good", "time", "trouble"],
+    answer: ["had", "a", "good", "time"],
+    completed: "We had a good time at the party.",
+    translation: "私たちはパーティーで楽しい時間を過ごしました。",
+  },
+  {
+    type: "japanese",
+    prompt: "実現する",
+    parts: ["come", "true", "back", "go"],
+    answer: ["come", "true"],
+    translation: "実現する",
+  },
+  {
+    type: "context",
+    prompt: "I hope everything ________.",
+    parts: ["goes", "well", "wrong", "back"],
+    answer: ["goes", "well"],
+    completed: "I hope everything goes well.",
+    translation: "すべてうまくいくといいですね。",
+  },
+  {
+    type: "japanese",
+    prompt: "私を迎えに来る",
+    parts: ["pick", "me", "up", "one", "on"],
+    answer: ["pick", "me", "up"],
+    translation: "私を迎えに来る",
+  },
+  {
+    type: "context",
+    prompt: "________ a minute, please.",
+    parts: ["Hold", "on", "a", "meeting"],
+    answer: ["Hold", "on"],
+    completed: "Hold on a minute, please.",
+    translation: "ちょっと待ってください。",
+  },
+  {
+    type: "japanese",
+    prompt: "目標を達成する",
+    parts: ["reach", "a", "goal", "station"],
+    answer: ["reach", "a", "goal"],
+    translation: "目標を達成する",
+  },
+  {
+    type: "context",
+    prompt: "I hope I can ________.",
+    parts: ["pass", "the", "test", "by"],
+    answer: ["pass", "the", "test"],
+    completed: "I hope I can pass the test.",
+    translation: "その試験に合格できるといいな。",
+  },
+  {
+    type: "japanese",
+    prompt: "休憩する",
+    parts: ["take", "a", "break", "rule"],
+    answer: ["take", "a", "break"],
+    translation: "休憩する",
+  },
+  {
+    type: "context",
+    prompt: "Do you know ________ yesterday?",
+    parts: ["what", "happened", "happen", "when"],
+    answer: ["what", "happened"],
+    completed: "Do you know what happened yesterday?",
+    translation: "昨日何が起こったか知っていますか。",
+  },
+];
+
+
 function shuffleArray(array) {
   const shuffled = [...array];
 
@@ -240,7 +319,8 @@ async function playWrongSound() {
   speakWithSamantha();
 };
 
-export default function EikenPhraseBattle({ onBack }) {
+export default function EikenPhraseBattle({ onBack, stage = 1 }) {
+  const activeQuestions = stage === 2 ? STAGE2_QUESTIONS : QUESTIONS;
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedParts, setSelectedParts] = useState([]);
   const [answered, setAnswered] = useState(false);
@@ -248,9 +328,9 @@ export default function EikenPhraseBattle({ onBack }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
 
-  const question = QUESTIONS[questionIndex];
+const question = activeQuestions[questionIndex];
 const [shuffledParts, setShuffledParts] = useState(() =>
-  shuffleArray(QUESTIONS[0].parts)
+  shuffleArray(activeQuestions[0].parts)
 );
   function choosePart(part, index) {
     if (answered) return;
@@ -303,27 +383,27 @@ if (correct) {
   }
 
  function goNext() {
-  if (questionIndex === QUESTIONS.length - 1) {
+  if (questionIndex === activeQuestions.length - 1) {
 const finalCorrectCount = correctCount;
 
 const finalScore = Math.round(
-  (finalCorrectCount / QUESTIONS.length) * 100
+  (finalCorrectCount / activeQuestions.length) * 100
 );
 
     // 最後まで完走した日を保存
     const today = new Date().toLocaleDateString("en-CA");
 
-    localStorage.setItem(
-      "eiken-pre2-rookie-stage1-phrase-lastCompletedDate",
-      today
-    );
+   localStorage.setItem(
+  `eiken-pre2-rookie-stage${stage}-phrase-lastCompletedDate`,
+  today
+);
 
     // 80%以上なら一度クリアした証を永久保存
     if (finalScore >= 80) {
-  localStorage.setItem(
-    "eiken-pre2-rookie-stage1-phrase-cleared",
-    "true"
-  );
+localStorage.setItem(
+  `eiken-pre2-rookie-stage${stage}-phrase-cleared`,
+  "true"
+);
 }
 
 // BATTLE履歴を保存
@@ -339,7 +419,7 @@ const newRecord = {
   playerName,
   date: new Date().toISOString(),
   rank: "ROOKIE",
-  stage: 1,
+  stage,
   battleType: "PHRASE",
   score: finalScore,
 };
@@ -359,12 +439,12 @@ setFinished(true);
   setSelectedParts([]);
   setAnswered(false);
   setIsCorrect(false);
-  setShuffledParts(shuffleArray(QUESTIONS[nextIndex].parts));
+setShuffledParts(shuffleArray(activeQuestions[nextIndex].parts));
 }
 
   if (finished) {
     const score = Math.round(
-      (correctCount / QUESTIONS.length) * 100
+      (correctCount / activeQuestions.length) * 100
     );
 
     return (
@@ -396,7 +476,7 @@ setFinished(true);
               margin: "25px 0 10px",
             }}
           >
-            {correctCount} / {QUESTIONS.length}
+            {correctCount} / {activeQuestions.length}
           </div>
 
           <div
@@ -452,8 +532,8 @@ setFinished(true);
           </h1>
 
           <div style={{ fontWeight: "700" }}>
-            STAGE 1　QUESTION {questionIndex + 1} /{" "}
-            {QUESTIONS.length}
+          STAGE {stage}　QUESTION {questionIndex + 1} /{" "}
+            {activeQuestions.length}
           </div>
         </div>
 
@@ -623,7 +703,7 @@ setFinished(true);
                 fontSize: "18px",
               }}
             >
-              {questionIndex === QUESTIONS.length - 1
+              {questionIndex === activeQuestions.length - 1
                 ? "RESULT"
                 : "NEXT"}
             </button>
