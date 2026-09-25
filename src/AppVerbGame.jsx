@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { verbs } from "./AppIrregular";
 
 const GAME_SIZE = 15;
@@ -13,7 +13,53 @@ function shuffle(array) {
 }
 
 function makeGameQuestions() {
-  return shuffle(verbs).slice(0, GAME_SIZE);
+  const saved = JSON.parse(
+    localStorage.getItem("verbGameLearningData") || "{}"
+  );
+
+  const ranked = verbs.map((verb) => {
+    const key = `${verb.sheet}-${verb.number}`;
+
+    const record = saved[key] || {
+      seen: 0,
+      pastMistakes: 0,
+      participleMistakes: 0,
+      meaningMistakes: 0,
+    };
+
+    const totalMistakes =
+      record.pastMistakes +
+      record.participleMistakes +
+      record.meaningMistakes;
+
+    return {
+      verb,
+      seen: record.seen,
+      totalMistakes,
+      random: Math.random(),
+    };
+  });
+
+  ranked.sort((a, b) => {
+    // ① 未出題を最優先
+    if (a.seen === 0 && b.seen !== 0) return -1;
+    if (a.seen !== 0 && b.seen === 0) return 1;
+
+    // ② どちらも未出題ならランダム
+    if (a.seen === 0 && b.seen === 0) {
+      return a.random - b.random;
+    }
+
+    // ③ 出題済みならミスが多いものを優先
+    if (a.totalMistakes !== b.totalMistakes) {
+      return b.totalMistakes - a.totalMistakes;
+    }
+
+    // ④ 同点ならランダム
+    return a.random - b.random;
+  });
+
+  return ranked.slice(0, GAME_SIZE).map((item) => item.verb);
 }
 
 function makeMeaningChoices(current) {
@@ -61,7 +107,7 @@ export default function AppVerbGame({ onBack }) {
   });
 
   const [finished, setFinished] = useState(false);
-
+  const historySavedRef = useRef(false);
   const pastRef = useRef(null);
   const participleRef = useRef(null);
   const meaningRef = useRef(null);
@@ -104,38 +150,127 @@ export default function AppVerbGame({ onBack }) {
     }, 50);
   };
 
-  const finishQuestion = (finalMistakes = questionMistakes) => {
-    const perfect =
-      !finalMistakes.past &&
-      !finalMistakes.participle &&
-      !finalMistakes.meaning;
+const finishQuestion = (finalMistakes = questionMistakes) => {
+  const perfect =
+    !finalMistakes.past &&
+    !finalMistakes.participle &&
+    !finalMistakes.meaning;
 
-    setStats((prev) => ({
-      ...prev,
-      perfect: prev.perfect + (perfect ? 1 : 0),
-      pastMistakes:
-        prev.pastMistakes + (finalMistakes.past ? 1 : 0),
-      participleMistakes:
-        prev.participleMistakes +
-        (finalMistakes.participle ? 1 : 0),
-      meaningMistakes:
-        prev.meaningMistakes +
-        (finalMistakes.meaning ? 1 : 0),
-    }));
+  // ===== 長期学習データを保存 =====
+  const storageKey = "verbGameLearningData";
+  const verbKey = `${current.sheet}-${current.number}`;
 
-    if (questionIndex >= GAME_SIZE - 1) {
-      setTimeout(() => {
-        setFinished(true);
-      }, 350);
+  const saved = JSON.parse(
+    localStorage.getItem(storageKey) || "{}"
+  );
 
-      return;
-    }
-
-    setTimeout(() => {
-      setQuestionIndex((prev) => prev + 1);
-      resetQuestion();
-    }, 350);
+  const previous = saved[verbKey] || {
+    seen: 0,
+    pastMistakes: 0,
+    participleMistakes: 0,
+    meaningMistakes: 0,
   };
+
+  saved[verbKey] = {
+    seen: (previous.seen || 0) + 1,
+    pastMistakes:
+      (previous.pastMistakes || 0) +
+      (finalMistakes.past ? 1 : 0),
+    participleMistakes:
+      (previous.participleMistakes || 0) +
+      (finalMistakes.participle ? 1 : 0),
+    meaningMistakes:
+      (previous.meaningMistakes || 0) +
+      (finalMistakes.meaning ? 1 : 0),
+  };
+
+  localStorage.setItem(
+    storageKey,
+    JSON.stringify(saved)
+  );
+
+  // ===== 今回のGAME 15成績 =====
+  setStats((prev) => ({
+    ...prev,
+    perfect: prev.perfect + (perfect ? 1 : 0),
+    pastMistakes:
+      prev.pastMistakes +
+      (finalMistakes.past ? 1 : 0),
+    participleMistakes:
+      prev.participleMistakes +
+      (finalMistakes.participle ? 1 : 0),
+    meaningMistakes:
+      prev.meaningMistakes +
+      (finalMistakes.meaning ? 1 : 0),
+  }));
+
+ // ===== 次の問題へ =====
+if (questionIndex === GAME_SIZE - 1) {
+  setTimeout(() => {
+    setFinished(true);
+  }, 350);
+
+  return;
+}
+
+  setTimeout(() => {
+    setQuestionIndex((prev) => prev + 1);
+    resetQuestion();
+  }, 350);
+};
+useEffect(() => {
+  if (!finished || historySavedRef.current) return;
+
+  const playerName = localStorage.getItem("playerName");
+  if (!playerName) return;
+
+const oldHistory = JSON.parse(
+  localStorage.getItem("wordHistory") || "[]"
+);
+
+  const newRecord = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    playerName,
+    activity: "GAME 15",
+    correctCount: stats.perfect,
+    totalCount: GAME_SIZE,
+  };
+
+  const newHistory = [newRecord, ...oldHistory];
+
+localStorage.setItem(
+  "wordHistory",
+  JSON.stringify(newHistory)
+);
+
+  historySavedRef.current = true;
+}, [finished, stats.perfect]);
+const handlePastKeyDown = (e) => {
+  if (e.key !== "?") return;
+
+  e.preventDefault();
+
+  const newMistakes = {
+    ...questionMistakes,
+    past: true,
+  };
+
+  setQuestionMistakes(newMistakes);
+
+  setStats((prev) => ({
+    ...prev,
+    giveUps: prev.giveUps + 1,
+  }));
+
+  setPast(current.past);
+  setPastDone(true);
+  setPastMessage(`🏳️ 正解: ${current.past}`);
+
+  setTimeout(() => {
+    participleRef.current?.focus();
+  }, 150);
+};
 
   const handlePastEnter = () => {
     if (pastDone) return;
@@ -143,30 +278,36 @@ export default function AppVerbGame({ onBack }) {
     const answer = past.trim().toLowerCase();
     const correct = current.past.toLowerCase();
 
-    // 空欄Enter = ギブアップ
-    if (answer === "") {
-      const newMistakes = {
-        ...questionMistakes,
-        past: true,
-      };
+ // 空欄Enter = 進まない
+if (answer === "") {
+  setPastMessage("答えを入力してください");
+  return;
+}
 
-      setQuestionMistakes(newMistakes);
+// ? + Enter = ギブアップ
+if (answer === "?") {
+  const newMistakes = {
+    ...questionMistakes,
+    past: true,
+  };
 
-      setStats((prev) => ({
-        ...prev,
-        giveUps: prev.giveUps + 1,
-      }));
+  setQuestionMistakes(newMistakes);
 
-      setPast(current.past);
-      setPastDone(true);
-      setPastMessage(`🏳️ 正解: ${current.past}`);
+  setStats((prev) => ({
+    ...prev,
+    giveUps: prev.giveUps + 1,
+  }));
 
-      setTimeout(() => {
-        participleRef.current?.focus();
-      }, 150);
+  setPast(current.past);
+  setPastDone(true);
+  setPastMessage(`🏳️ 正解: ${current.past}`);
 
-      return;
-    }
+  setTimeout(() => {
+    participleRef.current?.focus();
+  }, 150);
+
+  return;
+}
 
     // 正解
     if (answer === correct) {
@@ -195,32 +336,36 @@ export default function AppVerbGame({ onBack }) {
     const answer = participle.trim().toLowerCase();
     const correct = current.participle.toLowerCase();
 
-    // 空欄Enter = ギブアップ
-    if (answer === "") {
-      const newMistakes = {
-        ...questionMistakes,
-        participle: true,
-      };
+    // 空欄Enter = 進まない
+if (answer === "") {
+  setParticipleMessage("答えを入力してください");
+  return;
+}
 
-      setQuestionMistakes(newMistakes);
+// ? + Enter = ギブアップ
+if (answer === "?") {
+  const newMistakes = {
+    ...questionMistakes,
+    participle: true,
+  };
 
-      setStats((prev) => ({
-        ...prev,
-        giveUps: prev.giveUps + 1,
-      }));
+  setQuestionMistakes(newMistakes);
 
-      setParticiple(current.participle);
-      setParticipleDone(true);
-      setParticipleMessage(
-        `🏳️ 正解: ${current.participle}`
-      );
+  setStats((prev) => ({
+    ...prev,
+    giveUps: prev.giveUps + 1,
+  }));
 
-      setTimeout(() => {
-        meaningRef.current?.focus();
-      }, 150);
+  setParticiple(current.participle);
+  setParticipleDone(true);
+  setParticipleMessage(`🏳️ 正解: ${current.participle}`);
 
-      return;
-    }
+  setTimeout(() => {
+    meaningRef.current?.focus();
+  }, 150);
+
+  return;
+}
 
     // 正解
     if (answer === correct) {
@@ -247,7 +392,30 @@ const handleMeaningKeyDown = (e) => {
   if (advancingRef.current) return;
 
   const key = e.key.toLowerCase();
+  // ? = ギブアップして即答え表示
+  if (e.key === "?") {
+    e.preventDefault();
 
+    const newMistakes = {
+      ...questionMistakes,
+      meaning: true,
+    };
+
+    setQuestionMistakes(newMistakes);
+
+    setStats((prev) => ({
+      ...prev,
+      giveUps: prev.giveUps + 1,
+    }));
+
+    setMeaningKey(correctMeaning.key);
+
+ setMeaningMessage(
+  `🏳️ 正解: ${correctMeaning.key}. ${correctMeaning.japanese}　　Enter → NEXT`
+);
+
+return;
+  }
   // Backspace = 入力を消す
   if (e.key === "Backspace") {
     e.preventDefault();
@@ -260,31 +428,44 @@ const handleMeaningKeyDown = (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
 
-    // 空欄Enter = ギブアップ
-    if (meaningKey === "") {
-      advancingRef.current = true;
+      // ?で答えを見た後は、Enterで次へ
+  if (meaningKey === correctMeaning.key && questionMistakes.meaning) {
+    advancingRef.current = true;
+    finishQuestion(questionMistakes);
+    return;
+  }
 
-      const newMistakes = {
-        ...questionMistakes,
-        meaning: true,
-      };
+  // 空欄Enter = 進まない
+if (meaningKey === "") {
+  setMeaningMessage("答えを入力してください");
+  return;
+}
 
-      setQuestionMistakes(newMistakes);
+// ? + Enter = ギブアップ
+if (meaningKey === "?") {
+  advancingRef.current = true;
 
-      setStats((prev) => ({
-        ...prev,
-        giveUps: prev.giveUps + 1,
-      }));
+  const newMistakes = {
+    ...questionMistakes,
+    meaning: true,
+  };
 
-      setMeaningKey(correctMeaning.key);
+  setQuestionMistakes(newMistakes);
 
-      setMeaningMessage(
-        `🏳️ 正解: ${correctMeaning.key}. ${correctMeaning.japanese}`
-      );
+  setStats((prev) => ({
+    ...prev,
+    giveUps: prev.giveUps + 1,
+  }));
 
-      finishQuestion(newMistakes);
-      return;
-    }
+  setMeaningKey(correctMeaning.key);
+
+  setMeaningMessage(
+    `🏳️ 正解: ${correctMeaning.key}. ${correctMeaning.japanese}`
+  );
+
+  finishQuestion(newMistakes);
+  return;
+}
 
     // 入力されたキーが4択のどれか確認
     const selectedChoice = meaningChoices.find(
@@ -324,7 +505,7 @@ const handleMeaningKeyDown = (e) => {
   }
 
   // アルファベット・数字の入力
-  if (/^[a-z1-9]$/.test(key)) {
+if (/^[a-z1-9?]$/.test(key)) {
     e.preventDefault();
 
     // まだ採点しない。入力するだけ。
@@ -474,12 +655,38 @@ const handleMeaningKeyDown = (e) => {
 
               setPastMessage("");
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handlePastEnter();
-              }
-            }}
+          onKeyDown={(e) => {
+  if (e.key === "?") {
+    e.preventDefault();
+
+    const newMistakes = {
+      ...questionMistakes,
+      past: true,
+    };
+
+    setQuestionMistakes(newMistakes);
+
+    setStats((prev) => ({
+      ...prev,
+      giveUps: prev.giveUps + 1,
+    }));
+
+    setPast(current.past);
+    setPastDone(true);
+    setPastMessage(`🏳️ 正解: ${current.past}`);
+
+    setTimeout(() => {
+      participleRef.current?.focus();
+    }, 150);
+
+    return;
+  }
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handlePastEnter();
+  }
+}}
             style={{
               width: "250px",
               padding: "14px",
@@ -521,12 +728,38 @@ const handleMeaningKeyDown = (e) => {
 
               setParticipleMessage("");
             }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleParticipleEnter();
-              }
-            }}
+       onKeyDown={(e) => {
+  if (e.key === "?") {
+    e.preventDefault();
+
+    const newMistakes = {
+      ...questionMistakes,
+      participle: true,
+    };
+
+    setQuestionMistakes(newMistakes);
+
+    setStats((prev) => ({
+      ...prev,
+      giveUps: prev.giveUps + 1,
+    }));
+
+    setParticiple(current.participle);
+    setParticipleDone(true);
+    setParticipleMessage(`🏳️ 正解: ${current.participle}`);
+
+    setTimeout(() => {
+      meaningRef.current?.focus();
+    }, 150);
+
+    return;
+  }
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    handleParticipleEnter();
+  }
+}}
             style={{
               width: "250px",
               padding: "14px",
@@ -621,7 +854,7 @@ const handleMeaningKeyDown = (e) => {
             opacity: 0.65,
           }}
         >
-          分からないときは空欄のまま Enter
+       ? key = SHOW ANSWER
         </div>
       </div>
     </div>

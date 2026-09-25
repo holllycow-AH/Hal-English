@@ -132,7 +132,7 @@ const [helpLevel, setHelpLevel] = useState(0);
 const baseRef = useRef(null);
 const pastRef = useRef(null);
 const participleRef = useRef(null);
-
+const isAdvancingRef = useRef(false);
 const activeVerbs = verbs.filter(
   (verb) =>
     verb.sheet === selectedSheet &&
@@ -163,7 +163,7 @@ const speakForms = (baseWord, pastWord, participleWord) => {
   const voices = speechSynthesis.getVoices();
 
   const voice =
-    voices.find((v) => v.name === "Google US English") ||
+    voices.find((v) => v.name === "Samantha" && v.lang === "en-US") ||
     voices.find((v) => v.lang === "en-US");
 
   const text = `${baseWord}, ${pastWord}, ${participleWord}`;
@@ -186,7 +186,7 @@ const speakWord = (word) => {
   const voices = speechSynthesis.getVoices();
 
   const voice =
-    voices.find((v) => v.name === "Google US English") ||
+    voices.find((v) => v.name === "Samantha" && v.lang === "en-US") ||
     voices.find((v) => v.lang === "en-US");
 
   const utterance = new SpeechSynthesisUtterance(word);
@@ -220,6 +220,11 @@ const getCorrectPrefixLength = (typed, answer) => {
   }, [currentIndex]);
 
 const nextQuestion = () => {
+  // すでに次の問題へ進む予約があるなら、追加予約しない
+  if (isAdvancingRef.current) return;
+
+  isAdvancingRef.current = true;
+
   setTimeout(() => {
     setBase("");
     setPast("");
@@ -235,6 +240,9 @@ const nextQuestion = () => {
 
       return prev + 1;
     });
+
+    // 次の問題に移ったのでロック解除
+    isAdvancingRef.current = false;
   }, 400);
 };
 const handleZeroHelp = (event, field, word) => {

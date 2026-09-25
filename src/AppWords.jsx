@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 
 const WORD_LISTS = {
@@ -344,19 +344,51 @@ function parseWords(text) {
 
 function speak(text) {
   if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 0.9;
-  window.speechSynthesis.speak(utterance);
+
+  const speakWithSamantha = () => {
+    const voices = window.speechSynthesis.getVoices();
+
+    const samantha = voices.find(
+      (voice) => voice.name === "Samantha" && voice.lang === "en-US"
+    );
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    if (samantha) {
+      utterance.voice = samantha;
+    }
+
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const voices = window.speechSynthesis.getVoices();
+
+  if (
+    voices.some(
+      (voice) => voice.name === "Samantha" && voice.lang === "en-US"
+    )
+  ) {
+    speakWithSamantha();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => {
+      speakWithSamantha();
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }
 }
 
 export default function App() {
   const firstMode = Object.keys(WORD_LISTS)[0];
   const musicRef = useRef(null);
   const checkingRef = useRef(false);
-
+  const wordHistorySavedRef = useRef(false);
+const game20HistorySavedRef = useRef(false);
   const [mode, setMode] = useState(firstMode);
+  const [game20Mode, setGame20Mode] = useState(false);
   const [listText, setListText] = useState(WORD_LISTS[firstMode]);
   const words = useMemo(() => parseWords(listText), [listText]);
 
@@ -369,14 +401,54 @@ export default function App() {
   const [soundReady, setSoundReady] = useState(false);
   const [goalPlayed, setGoalPlayed] = useState(false);
   const [musicOn, setMusicOn] = useState(false);
+  const [game20Questions, setGame20Questions] = useState([]);
+const [game20Index, setGame20Index] = useState(0);
+const [game20Answer, setGame20Answer] = useState("");
+const [game20Correct, setGame20Correct] = useState(0);
+const [game20Wrong, setGame20Wrong] = useState(0);
+const [game20HintLevel, setGame20HintLevel] = useState(0);
+const [game20Finished, setGame20Finished] = useState(false);
+const game20CheckingRef = useRef(false);
+const game20CleanRef = useRef(true);
+const game20MistakeCountedRef = useRef(false);
   const [checking, setChecking] = useState(false);
 
   const current = words[index] || { english: "", japanese: "", icon: "" };
   const finished = index >= words.length;
   const score = correct + wrong === 0 ? 0 : Math.round((correct / (correct + wrong)) * 100);
+useEffect(() => {
+  if (!finished || wordHistorySavedRef.current) return;
 
+  const playerName = localStorage.getItem("playerName");
+  if (!playerName) return;
+
+  const newRecord = {
+    id: Date.now(),
+    playerName,
+    date: new Date().toISOString(),
+    activity: "WORD 250",
+    category: mode,
+    correctCount: correct,
+    totalCount: words.length,
+    wrong,
+  };
+
+  const oldHistory = JSON.parse(
+    localStorage.getItem("wordHistory") || "[]"
+  );
+
+  const newHistory = [newRecord, ...oldHistory];
+
+  localStorage.setItem(
+    "wordHistory",
+    JSON.stringify(newHistory)
+  );
+
+  wordHistorySavedRef.current = true;
+}, [finished, mode, correct, wrong, words.length]);
   function resetGame(nextText = listText) {
     checkingRef.current = false;
+      wordHistorySavedRef.current = false;
     setChecking(false);
     setListText(nextText);
     setIndex(0);
@@ -391,6 +463,106 @@ export default function App() {
     setMode(nextMode);
     resetGame(WORD_LISTS[nextMode]);
   }
+function startGame20() {
+  const allWords = Object.values(WORD_LISTS).flatMap((text) =>
+    parseWords(text)
+  );
+
+  const shuffled = [...allWords].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 20);
+
+  setGame20Questions(selected);
+  setGame20Index(0);
+  setGame20Answer("");
+  setGame20Correct(0);
+  setGame20Wrong(0);
+  setGame20HintLevel(0);
+  setGame20Finished(false);
+  game20CleanRef.current = true;
+  game20MistakeCountedRef.current = false;
+game20HistorySavedRef.current = false;
+  setGame20Mode(true);
+}
+function checkGame20Answer() {
+  if (game20Finished || game20CheckingRef.current) return;
+
+  const current = game20Questions[game20Index];
+  if (!current) return;
+
+  const typed = game20Answer.trim().toLowerCase();
+  const correctAnswer = current.english.toLowerCase();
+
+  if (!typed) return;
+
+  game20CheckingRef.current = true;
+
+  if (typed === correctAnswer) {
+    // 正解
+if (game20CleanRef.current) {
+  setGame20Correct((prev) => prev + 1);
+}
+
+    // 正解できたときだけ発音
+    speak(current.english);
+
+    setTimeout(() => {
+if (game20Index >= 19) {
+  const playerName = localStorage.getItem("playerName");
+
+  if (playerName) {
+    const newRecord = {
+      id: Date.now(),
+      playerName,
+      date: new Date().toISOString(),
+      activity: "WORD",
+      category: "GAME 20",
+      correctCount: game20Correct + 1,
+      totalCount: 20,
+      wrong: game20Wrong,
+    };
+
+    const oldHistory = JSON.parse(
+      localStorage.getItem("wordHistory") || "[]"
+    );
+
+    const newHistory = [newRecord, ...oldHistory];
+
+    localStorage.setItem(
+      "wordHistory",
+      JSON.stringify(newHistory)
+    );
+  }
+
+  setGame20Finished(true);
+      } else {
+        setGame20Index((prev) => prev + 1);
+        setGame20Answer("");
+        setGame20HintLevel(0);
+        game20CleanRef.current = true;
+        game20MistakeCountedRef.current = false;
+      }
+
+      game20CheckingRef.current = false;
+    }, 700);
+  } else {
+    // ミス
+    game20CleanRef.current = false;
+  if (!game20MistakeCountedRef.current) {
+  setGame20Wrong((prev) => prev + 1);
+  game20MistakeCountedRef.current = true;
+}
+
+game20CleanRef.current = false;
+playWrongSound();
+
+    // 問題は変えず、入力欄だけ空にする
+    setGame20Answer("");
+    setGame20HintLevel(0);
+
+    game20CheckingRef.current = false;
+  }
+}
+
 
   function nextWord() {
     setAnswer("");
@@ -464,12 +636,183 @@ export default function App() {
       </div>
     );
   }
+if (game20Mode) {
+  const game20Current = game20Questions[game20Index];
+  if (game20Finished) {
+    return (
+      <div className="app">
+        <div className="game-card">
+          <h1>🏁 GAME 20 RESULT</h1>
 
+          <div
+            style={{
+              fontSize: "28px",
+              fontWeight: "bold",
+              margin: "30px 0",
+            }}
+          >
+            正解：{game20Correct} / 20
+          </div>
+
+          <div
+            style={{
+              fontSize: "22px",
+              marginBottom: "30px",
+            }}
+          >
+            ミス：{game20Wrong}
+          </div>
+
+          <button onClick={startGame20}>
+            🔄 もう一回
+          </button>
+
+          <button
+            onClick={() => setGame20Mode(false)}
+            style={{ marginLeft: "15px" }}
+          >
+            ← 戻る
+          </button>
+        </div>
+
+        <audio ref={musicRef} src="/rpg_bgm.mp3" loop />
+      </div>
+    );
+  }
+  return (
+    
+    
+    <div className="app">
+      <div className="game-card">
+        <h1>🎮 GAME 20</h1>
+
+<div
+  style={{
+    fontSize: "13px",
+    color: "#999",
+    marginBottom: "18px",
+  }}
+>
+  Push 0 to HELP　｜　0 × 1 👄　0 × 2 📝
+</div>
+
+        <div
+          style={{
+            fontSize: "18px",
+            fontWeight: "bold",
+            marginBottom: "20px",
+          }}
+        >
+          {game20Index + 1} / 20
+        </div>
+
+        {game20Current && (
+          <>
+            <div
+              style={{
+                fontSize: "56px",
+                marginBottom: "15px",
+              }}
+            >
+              {game20Current.icon}
+            </div>
+
+            <div
+              style={{
+                fontSize: "36px",
+                fontWeight: "bold",
+                marginBottom: "25px",
+              }}
+            >
+              {game20Current.japanese}
+            </div>
+          </>
+        )}
+        {game20HintLevel >= 2 && game20Current && (
+  <div
+    style={{
+      fontSize: "36px",
+      fontWeight: "bold",
+      opacity: 0.22,
+      marginBottom: "15px",
+    }}
+  >
+    {game20Current.english}
+  </div>
+)}
+        <input
+  className="typing"
+  value={game20Answer}
+  onChange={(e) => setGame20Answer(e.target.value)}
+  onKeyDown={(e) => {
+  if (e.key === "0") {
+    e.preventDefault();
+
+    if (!game20Current) return;
+   
+
+    if (game20HintLevel === 0) {
+      // 0を1回 → 発音
+      speak(game20Current.english);
+      setGame20HintLevel(1);
+  } else {
+  // 0を2回目 → スペル表示
+  game20CleanRef.current = false;
+
+  if (!game20MistakeCountedRef.current) {
+    setGame20Wrong((prev) => prev + 1);
+    game20MistakeCountedRef.current = true;
+  }
+
+  setGame20HintLevel(2);
+}
+
+    return;
+  }
+
+  if (e.key === "Enter") {
+    checkGame20Answer();
+  }
+}}
+  placeholder="英単語を入力"
+  autoFocus
+/>
+<div style={{ marginTop: "12px", marginBottom: "12px" }}>
+  <button
+    onClick={() => speak(game20Current.english)}
+    disabled={!game20Current}
+  >
+    🔊 0 HELP
+  </button>
+</div>
+<div style={{ marginTop: "15px" }}>
+  正解：{game20Correct}　ミス：{game20Wrong}
+</div>
+        <button onClick={() => setGame20Mode(false)}>
+          ← 戻る
+        </button>
+      </div>
+
+      <audio ref={musicRef} src="/rpg_bgm.mp3" loop />
+    </div>
+  );
+}
   return (
     <div className="app">
       <div className="game-card">
         <h1>英単語タイピングゲーム</h1>
-
+<button
+onClick={startGame20}
+  style={{
+    marginBottom: "20px",
+    padding: "10px 20px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    cursor: "pointer",
+  }}
+>
+  🎮 GAME 20
+</button>
         <div className="score-row">
           <div>カテゴリ：{mode}</div>
           <div>{index + 1} / {words.length}</div>
@@ -485,7 +828,11 @@ export default function App() {
             </button>
           ))}
         </div>
-
+<div className="button-row">
+  <button onClick={startGame20}>
+    🎮 GAME 20
+  </button>
+</div>
         <div className="button-row">
           <button
             onClick={() => {

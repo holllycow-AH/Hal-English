@@ -3,10 +3,11 @@ import AppWords from "./AppWords";
 import AppNewCrown from "./AppNewCrown";
 import AppIrregular from "./AppIrregular";
 import AppVerbGame from "./AppVerbGame";
+import AppMyPage from "./AppMyPage";
 import "./App.css";
 
 export default function App() {
-  const [tab, setTab] = useState("newcrown");
+const [tab, setTab] = useState("");
 
   return (
     <div>
@@ -27,7 +28,11 @@ export default function App() {
           🔤 単語250
         </button>
         <button onClick={() => setTab("irregular")}>
-　　　　　　📖 動詞活用
+  🔁 動詞活用
+</button>
+
+<button onClick={() => setTab("mypage")}>
+  👤 MY PAGE
 </button>
       </div>
       {tab === "irregular" && (
@@ -70,7 +75,9 @@ export default function App() {
 {tab === "newcrown" && <AppNewCrown />}
 {tab === "words" && <AppWords />}
 {tab === "irregular" && <AppIrregular onStartGame={() => setTab("verbGame")} />}
-{tab === "verbGame" && <AppVerbGame onBack={() => setTab("irregular")} />}
+{tab === "verbGame" && <AppVerbGame onBack={() => setTab("irregular")} /
+  >}
+  {tab === "mypage" && <AppMyPage onBack={() => setTab("")} />}
       
     </div>
   );
