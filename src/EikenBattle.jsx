@@ -32,6 +32,7 @@ if (activeBattle === "WORD") {
   if (activeBattle === "SENTENCE") {
   return (
     <EikenSentenceBattle
+    stage={activeStage}
       onBack={() => setActiveBattle(null)}
     />
   );
@@ -39,6 +40,7 @@ if (activeBattle === "WORD") {
 if (activeBattle === "READING") {
   return (
     <EikenReadingBattle
+    stage={activeStage}
       onBack={() => setActiveBattle(null)}
     />
   );
@@ -46,15 +48,17 @@ if (activeBattle === "READING") {
 if (activeBattle === "LISTENING") {
   return (
     <EikenListeningBattle
+    stage={activeStage}
       onBack={() => setActiveBattle(null)}
     />
   );
 }
 if (activeBattle === "FINAL") {
   return (
-    <EikenFinalBattle
-      onBack={() => setActiveBattle(null)}
-    />
+<EikenFinalBattle
+  stage={activeStage}
+  onBack={() => setActiveBattle(null)}
+/>
   );
 }
   if (activeBattle === "PHRASE") {
