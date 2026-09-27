@@ -399,7 +399,7 @@ export default function EikenMyPage({ onBack }) {
                 {" ｜ "}
                 {record.battleType}
                 {" ｜ "}
-                {record.score}%
+              {Math.round(record.score)}%
                 
                 {" ｜ "}
                 <strong style={{ marginLeft: "auto", whiteSpace: "nowrap" }}>
