@@ -172,6 +172,15 @@ export default function EikenPhraseBattle({ onBack, stage = 1 }) {
   const [isCorrect, setIsCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
+  const today = new Date().toLocaleDateString("en-CA");
+
+const lastCompletedDate = localStorage.getItem(
+  `eiken-pre2-rookie-stage${stage}-phrase-lastCompletedDate`
+);
+
+const [battleStarted, setBattleStarted] = useState(false);
+const alreadyPlayedToday = lastCompletedDate === today && !battleStarted;
+
 
 const question = activeQuestions[questionIndex];
 const [shuffledParts, setShuffledParts] = useState(() =>
@@ -197,6 +206,15 @@ const [shuffledParts, setShuffledParts] = useState(() =>
   function checkAnswer() {
     if (answered || selectedParts.length === 0) return;
 
+setBattleStarted(true);
+    
+  // 最初の回答時に、その日の受験記録を保存
+  if (questionIndex === 0) {
+    localStorage.setItem(
+      `eiken-pre2-rookie-stage${stage}-phrase-lastCompletedDate`,
+      today
+    );
+  }
     const selectedWords = selectedParts.map((item) => item.part);
 
     const correct =
@@ -348,7 +366,38 @@ setShuffledParts(shuffleArray(activeQuestions[nextIndex].parts));
 
   const completedEnglish =
     question.completed || question.answer.join(" ");
+  if (alreadyPlayedToday) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          padding: "80px 20px",
+          textAlign: "center",
+          background: "#f3f4f6",
+        }}
+      >
+        <h1>⚔️ PHRASE BATTLE</h1>
 
+        <div
+          style={{
+            maxWidth: "600px",
+            margin: "40px auto",
+            padding: "40px 20px",
+            background: "white",
+            borderRadius: "22px",
+          }}
+        >
+          <h2>本日の挑戦は終了！</h2>
+          <p>今日はすでに挑戦済みです。</p>
+          <p>明日また挑戦しよう！</p>
+
+          <button type="button" onClick={onBack}>
+            ← BATTLE MAP
+          </button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div
       style={{

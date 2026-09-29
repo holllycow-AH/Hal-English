@@ -73,9 +73,31 @@ if (activeBattle === "FINAL") {
   return <EikenMyPage onBack={() => setShowMyPage(false)} />;
 }
 
-  // 今は STAGE 1 だけ解放
-  // 後で Training の進行状況と連動させる
-const unlockedStage = 2;
+// STAGE 1 は解放済み。
+// 次のSTAGEは前のSTAGEの5科目DONEで解放する。
+
+const isTrainingComplete = (stageNumber) =>
+  [1, 2, 3, 4, 5].every((setNumber) => {
+    const laps = Number(
+      localStorage.getItem(
+        `eiken-pre2-rookie-stage${stageNumber}-set${setNumber}`
+      ) || 0
+    );
+
+    return laps >= 5;
+  });
+
+const isStageUnlocked = (stageNumber) => {
+  if (stageNumber === 1) return true;
+
+  return BATTLE_TYPES.every((battle) =>
+    getBattleCleared(stageNumber - 1, battle.title)
+  );
+};
+// STAGEが解放済み、かつTRAININGの全SETが星5ならBATTLE解放
+const isBattleUnlocked = (stageNumber) =>
+  isStageUnlocked(stageNumber) &&
+  isTrainingComplete(stageNumber);
 const getBattleCleared = (stageNumber, battleType) =>
   localStorage.getItem(
     `eiken-pre2-rookie-stage${stageNumber}-${battleType.toLowerCase()}-cleared`
@@ -158,7 +180,7 @@ const isFinalCleared = (stageNumber) =>
         }}
       >
         {[1, 2, 3, 4, 5].map((stageNumber) => {
-          const stageUnlocked = stageNumber <= unlockedStage;
+         const stageUnlocked = isStageUnlocked(stageNumber);
 
           return (
             <div
@@ -189,7 +211,7 @@ gap: "16px",
     <BattleButton
   key={battle.id}
   battle={battle}
-  unlocked={stageUnlocked}
+unlocked={isBattleUnlocked(stageNumber)}
   stageNumber={stageNumber}
 cleared={getBattleCleared(stageNumber, battle.title)}
 onOpenBattle={(battleTitle) => {

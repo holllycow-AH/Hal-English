@@ -13,6 +13,16 @@ export default function EikenReadingBattle({ onBack, stage = 1 }) {
   const [showJapanese, setShowJapanese] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
+  const today = new Date().toLocaleDateString("en-CA");
+
+const lastCompletedDate = localStorage.getItem(
+  `eiken-pre2-rookie-stage${stage}-reading-lastCompletedDate`
+);
+
+const [battleStarted, setBattleStarted] = useState(false);
+
+const alreadyPlayedToday =
+  lastCompletedDate === today && !battleStarted;
 
   const passage = activePassages[passageIndex];
 
@@ -32,7 +42,14 @@ export default function EikenReadingBattle({ onBack, stage = 1 }) {
 
   function checkAnswers() {
     if (!allAnswered || checked) return;
+setBattleStarted(true);
 
+if (passageIndex === 0) {
+  localStorage.setItem(
+    `eiken-pre2-rookie-stage${stage}-reading-lastCompletedDate`,
+    today
+  );
+}
     const passageCorrect = passage.questions.reduce(
       (total, question, index) =>
         total +
@@ -119,7 +136,38 @@ setFinished(true);
   const score = Math.round(
     (correctCount / totalQuestions) * 100
   );
+if (alreadyPlayedToday) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "80px 20px",
+        textAlign: "center",
+        background: "#f3f4f6",
+      }}
+    >
+      <h1>📖 READING BATTLE</h1>
 
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "40px auto",
+          padding: "40px 20px",
+          background: "white",
+          borderRadius: "22px",
+        }}
+      >
+        <h2>本日の挑戦は終了！</h2>
+        <p>今日はすでに挑戦済みです。</p>
+        <p>明日また挑戦しよう！</p>
+
+        <button type="button" onClick={onBack}>
+          ← BATTLE MAP
+        </button>
+      </div>
+    </div>
+  );
+}
   if (finished) {
     return (
       <div

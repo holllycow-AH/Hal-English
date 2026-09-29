@@ -137,6 +137,18 @@ shuffleArray(activeQuestions[0].parts)
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
 
+const today = new Date().toLocaleDateString("en-CA");
+
+const lastCompletedDate = localStorage.getItem(
+  `eiken-pre2-rookie-stage${stage}-sentence-lastCompletedDate`
+);
+
+const [battleStarted, setBattleStarted] = useState(false);
+
+const alreadyPlayedToday =
+  lastCompletedDate === today && !battleStarted;
+
+
 const question = activeQuestions[questionIndex];
 
   function choosePart(part, index) {
@@ -165,6 +177,15 @@ const question = activeQuestions[questionIndex];
   ) {
     return;
   }
+
+setBattleStarted(true);
+
+if (questionIndex === 0) {
+  localStorage.setItem(
+    `eiken-pre2-rookie-stage${stage}-sentence-lastCompletedDate`,
+    today
+  );
+}
 
   const selectedWords =
     selectedParts.map((item) => item.part);
@@ -275,6 +296,39 @@ setFinished(true);
       shuffleArray(activeQuestions[nextIndex].parts)
     );
   }
+
+if (alreadyPlayedToday) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "80px 20px",
+        textAlign: "center",
+        background: "#f3f4f6",
+      }}
+    >
+      <h1>⚔️ SENTENCE BATTLE</h1>
+
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "40px auto",
+          padding: "40px 20px",
+          background: "white",
+          borderRadius: "22px",
+        }}
+      >
+        <h2>本日の挑戦は終了！</h2>
+        <p>今日はすでに挑戦済みです。</p>
+        <p>明日また挑戦しよう！</p>
+
+        <button type="button" onClick={onBack}>
+          ← BATTLE MAP
+        </button>
+      </div>
+    </div>
+  );
+}
 
   if (finished) {
     const score = Math.round(

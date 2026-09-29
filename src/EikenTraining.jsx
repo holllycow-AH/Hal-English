@@ -1631,9 +1631,10 @@ const restartSet = () => {
 };
 if (showBattle) {
   return (
-    <EikenBattle
-      onBack={() => setShowBattle(false)}
-    />
+<EikenBattle
+  stage={selectedStage}
+  onBack={() => setShowBattle(false)}
+/>
   );
 }
 if (showMyPage) {
@@ -1668,7 +1669,8 @@ const stage2Laps = Array.from({ length: 5 }, (_, index) => {
   );
 });
 
-const battleUnlocked = true;
+const battleUnlocked = stage1Laps.every((laps) => laps >= 5);
+const stage2BattleUnlocked = stage2Laps.every((laps) => laps >= 5);
   return (
     <div className="eiken-app">
       <div className="rookie-map-title">
@@ -1848,7 +1850,7 @@ MY PAGE
                   <button
   type="button"
   className="next-run-button"
-  disabled={stageNumber !== 2}
+disabled={stageNumber !== 2 || !stage2BattleUnlocked}
   onClick={() => {
     if (stageNumber === 2) {
       setSelectedStage(2);
@@ -1893,7 +1895,7 @@ MY PAGE
   <button
     type="button"
     className="next-run-button"
-    disabled={stageNumber !== 2}
+disabled={stageNumber !== 2 || !stage2BattleUnlocked}
     onClick={() => {
       if (stageNumber === 2) {
         setSelectedStage(stageNumber);
@@ -1901,8 +1903,8 @@ MY PAGE
       }
     }}
     style={{
-      opacity: stageNumber === 2 ? 1 : 0.35,
-      cursor: stageNumber === 2 ? "pointer" : "not-allowed",
+     opacity: stageNumber === 2 && stage2BattleUnlocked ? 1 : 0.35,
+ cursor: stageNumber === 2 && stage2BattleUnlocked ? "pointer" : "not-allowed",
     }}
   >
     ⚔
@@ -1914,11 +1916,11 @@ MY PAGE
     style={{
       fontSize: "14px",
       fontWeight: "700",
-      opacity: stageNumber === 2 ? 1 : 0.35,
+    opacity: stageNumber === 2 && stage2BattleUnlocked ? 1 : 0.35,
       whiteSpace: "nowrap",
     }}
   >
-    {stageNumber === 2 ? "READY!" : "🔒 LOCKED"}
+{stageNumber === 2 && stage2BattleUnlocked ? "READY!" : "🔒 LOCKED"}
   </div>
 </div>
 

@@ -109,14 +109,37 @@ export default function EikenWordBattle({ onBack, stage = 1 }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
 
+const today = new Date().toLocaleDateString("en-CA");
+
+const lastCompletedDate = localStorage.getItem(
+  `eiken-pre2-rookie-stage${stage}-word-lastCompletedDate`
+);
+
+const [battleStarted, setBattleStarted] = useState(false);
+
+const alreadyPlayedToday =
+  lastCompletedDate === today && !battleStarted;
+
+
   const question = activeQuestions[questionIndex];
   const answered = selectedAnswer !== null;
   const isCorrect = selectedAnswer === question.answer;
 
-  function handleAnswer(choice) {
+
+function handleAnswer(choice) {
   if (answered) return;
 
+  setBattleStarted(true);
+
+  if (questionIndex === 0) {
+    localStorage.setItem(
+      `eiken-pre2-rookie-stage${stage}-word-lastCompletedDate`,
+      today
+    );
+  }
+
   setSelectedAnswer(choice);
+
 
   const correct = choice === question.answer;
 
@@ -142,7 +165,7 @@ export default function EikenWordBattle({ onBack, stage = 1 }) {
 }
 
   function goNext() {
-if (questionIndex === QUESTIONS.length - 1) {
+if (questionIndex === activeQuestions.length - 1) {
   const finalCorrectCount = correctCount;
 
   const finalScore = Math.round(
@@ -196,6 +219,39 @@ setFinished(true);
   setSelectedAnswer(null);
 }
 
+
+if (alreadyPlayedToday) {
+  return (
+    <div
+      className="eiken-app"
+      style={{
+        minHeight: "100vh",
+        padding: "80px 20px",
+        textAlign: "center",
+      }}
+    >
+      <h1>🔤 WORD BATTLE</h1>
+
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "40px auto",
+          padding: "40px 20px",
+          background: "white",
+          borderRadius: "22px",
+        }}
+      >
+        <h2>本日の挑戦は終了！</h2>
+        <p>今日はすでに挑戦済みです。</p>
+        <p>明日また挑戦しよう！</p>
+
+        <button type="button" onClick={onBack}>
+          ← BATTLE MAP
+        </button>
+      </div>
+    </div>
+  );
+}
 if (finished) {
   const score = Math.round(
     (correctCount / activeQuestions.length) * 100
@@ -242,7 +298,7 @@ if (finished) {
               marginBottom: "10px",
             }}
           >
-            {correctCount} / {QUESTIONS.length}
+           {correctCount} / {activeQuestions.length}
           </div>
 
           <div
