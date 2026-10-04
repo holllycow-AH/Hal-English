@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-
+import EikenRankPage from "./EikenRankPage.jsx";
 export default function EikenMyPage({ onBack }) {
+  const [showRankPage, setShowRankPage] = useState(false);
 
   const [name, setName] = useState(
 
@@ -327,11 +328,13 @@ const currentStage =
     });
 
   }
-
+if (showRankPage) {
+  return <EikenRankPage onBack={() => setShowRankPage(false)} />;
+}
  if (showDiaryBook) {
    return (
      <div style={{ minHeight: "100vh", maxWidth: "1700px", margin: "0 auto", padding: "35px", boxSizing: "border-box" }}>
-       <h1 style={{ textAlign: "center", marginTop: 0 }}>📖 MY DIARY BOOK</h1>
+       <h1 style={{ textAlign: "center", marginTop: 0 }}>　MY DIARY BOOK</h1>
        <p style={{ textAlign: "center", color: "#777" }}>{diaryDays} DAYS WRITTEN</p>
        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: "30px", alignItems: "start" }}>
          <section style={{ background: "white", border: "1px solid #b9cce4", borderRadius: "14px", padding: "24px", minHeight: "480px" }}>
@@ -470,28 +473,54 @@ const currentStage =
 
         >
 
-          <div style={{ fontSize: "18px" }}>
+         <button
+  type="button"
+  onClick={() => {
+  setShowRankPage(true);
+}}
+  style={{
+    border: "1px solid #ccc",
+    borderRadius: "12px",
+    background: "#ffffff",
+    color: "#222222",
+    padding: "9px 16px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    whiteSpace: "nowrap",
+  }}
+>
+  <div
+    style={{
+      fontSize: "13px",
+      fontWeight: "800",
+      color: "#777",
+      paddingRight: "12px",
+      borderRight: "1px solid #ddd",
+    }}
+  >
+    RANK
+  </div>
 
-            🗡️ ROOKIE
+  <div
+    style={{
+      fontSize: "17px",
+      fontWeight: "800",
+    }}
+  >
+    🗡 ROOKIE
+  </div>
 
-          </div>
-
-          <div
-
-            style={{
-
-              fontSize: "13px",
-
-              color: "#666",
-
-            }}
-
-          >
-
-          STAGE {currentStage}
-
-          </div>
-
+  <div
+    style={{
+      fontSize: "13px",
+      color: "#666",
+    }}
+  >
+    STAGE {currentStage}
+  </div>
+</button>
         </div>
 
       </div>
@@ -592,7 +621,7 @@ const currentStage =
 
               >
 
-                👤 {name}
+                 {name}
 
               </div>
 
@@ -965,7 +994,7 @@ gap: "40px",
 
   >
 
-    <strong>📓 MY DIARY</strong>
+    <strong>　MY DIARY</strong>
 
     <span style={{ color: "#888", fontSize: "13px" }}>
 
@@ -1088,7 +1117,7 @@ style={{
   fontWeight: "bold",
 }}
   >
-  📖 MY DIARY →
+  　MY DIARY →
   </button>
 
   <span
@@ -1107,42 +1136,92 @@ style={{
         </div>
 
       </div>
-{/* MY WORDS 入口 */}
+{/* MY WORDS ＋ FOR FUN */}
 <div
   style={{
-  display: "flex",
-alignItems: "center",
-justifyContent: "flex-start",
-gap: "80px",
-margin: "-70px 300px 17px 240px",
-    padding: "14px 22px",
+    display: "flex",
+    alignItems: "center",
+    gap: "28px",
+    margin: "-70px 250px 17px 250px",
+  }}
+>
+  {/* MY WORDS */}
+{/* MY WORDS */}
+<div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "18px 14px",
     background: "white",
     border: "1px solid #ddd",
     borderRadius: "14px",
+    width: "fit-content",
   }}
 >
-<div style={{ textAlign: "left" }}>
-<div
-  style={{
-    fontSize: "20px",
-    color: "#888",
-    fontWeight: "normal",
-  }}
->
-  Build your own word list. Up to 30 words.
-</div>
-</div>
-
   <button
     type="button"
     style={{
-      padding: "13px 28px",
+      padding: "10px 18px",
       fontSize: "16px",
       fontWeight: "bold",
+      whiteSpace: "nowrap",
     }}
   >
-    📚 MY WORDS →
+    MY WORDS
   </button>
+
+  <span
+    style={{
+      fontSize: "16px",
+      color: "#888",
+      whiteSpace: "nowrap",
+    }}
+  >
+    up to 30.
+  </span>
+</div>
+
+  {/* FOR FUN */}
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: "18px",
+      padding: "14px 22px",
+      background: "white",
+      border: "1px solid #ddd",
+      borderRadius: "14px",
+      width: "fit-content",
+    }}
+  >
+    <span
+      style={{
+        fontSize: "20px",
+        color: "#aaa",
+        whiteSpace: "nowrap",
+      }}
+    >
+      For fun!
+    </span>
+
+    <button
+      type="button"
+style={{
+  padding: "13px 28px",
+  fontSize: "16px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  borderRadius: "10px",
+  cursor: "pointer",
+}}
+    >
+      PUSH
+    </button>
+  </div>
 </div>
       {/* 下段：学習履歴を横幅いっぱいに2列表示 */}
 

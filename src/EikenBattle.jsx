@@ -132,18 +132,7 @@ const isFinalCleared = (stageNumber) =>
 >
   <span>⚔️ ROOKIE BATTLE ⚔️</span>
 
-  <span
-    style={{
-      fontSize: "16px",
-      fontWeight: "800",
-      letterSpacing: "0.08em",
-      background: "#e5e5e5",
-      padding: "7px 14px",
-      borderRadius: "999px",
-    }}
-  >
-    STAGE 1
-  </span>
+  
 </div>
       <button
   type="button"

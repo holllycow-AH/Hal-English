@@ -1,5 +1,6 @@
 import { QUESTIONS } from "./data/battle/listening/stage1Listening";
 import { STAGE2_QUESTIONS } from "./data/battle/listening/stage2Listening";
+import { STAGE3_QUESTIONS } from "./data/battle/listening/stage3Listening";
 
 import React, { useState } from "react";
 
@@ -19,8 +20,27 @@ export default function EikenListeningBattle({ onBack, stage = 1 }) {
     useState(false);
   const [hasPlayed, setHasPlayed] =
     useState(false);
+    const [playCount, setPlayCount] =
+  useState(0);
 
-const activeQuestions = stage === 2 ? STAGE2_QUESTIONS : QUESTIONS;
+const today = new Date().toLocaleDateString("en-CA");
+
+const lastCompletedDate = localStorage.getItem(
+  `eiken-pre2-rookie-stage${stage}-listening-lastCompletedDate`
+);
+
+const [battleStarted, setBattleStarted] = useState(false);
+
+const alreadyPlayedToday =
+  lastCompletedDate === today && !battleStarted;
+
+
+const activeQuestions =
+  stage === 3
+    ? STAGE3_QUESTIONS
+    : stage === 2
+    ? STAGE2_QUESTIONS
+    : QUESTIONS;
 const question = activeQuestions[questionIndex];
 async function playCorrectSound() {
   const AudioContext =
@@ -128,21 +148,26 @@ async function playWrongSound() {
   speakWithSamantha();
 }
 
-  function playQuestion() {
-    if (hasPlayed && !answered) return;
+function playQuestion() {
+  if (playCount >= 2 && !answered) return;
 
-    let text = question.audio;
+  let text = question.audio;
 
-    if (
-      question.type !== "response" &&
-      question.question
-    ) {
-      text += " " + question.question;
-    }
-
-    speakEnglish(text);
-    setHasPlayed(true);
+  if (
+    question.type !== "response" &&
+    question.question
+  ) {
+    text += " " + question.question;
   }
+
+  speakEnglish(text);
+  setHasPlayed(true);
+
+  if (!answered) {
+    setPlayCount((prev) => prev + 1);
+  }
+}
+
 
   function chooseAnswer(choiceIndex) {
     if (!hasPlayed || answered) return;
@@ -157,6 +182,15 @@ async function playWrongSound() {
   ) {
     return;
   }
+
+setBattleStarted(true);
+
+if (questionIndex === 0) {
+  localStorage.setItem(
+    `eiken-pre2-rookie-stage${stage}-listening-lastCompletedDate`,
+    today
+  );
+}
 
   const correct =
     selectedAnswer === question.answer;
@@ -229,6 +263,7 @@ localStorage.setItem(
     setSelectedAnswer(null);
     setAnswered(false);
     setHasPlayed(false);
+    setPlayCount(0);
 
     window.scrollTo({
       top: 0,
@@ -240,6 +275,39 @@ localStorage.setItem(
     (correctCount / activeQuestions.length) *
       100
   );
+
+if (alreadyPlayedToday) {
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "80px 20px",
+        textAlign: "center",
+        background: "#f3f4f6",
+      }}
+    >
+      <h1>🎧 LISTENING BATTLE</h1>
+
+      <div
+        style={{
+          maxWidth: "600px",
+          margin: "40px auto",
+          padding: "40px 20px",
+          background: "white",
+          borderRadius: "22px",
+        }}
+      >
+        <h2>本日の挑戦は終了！</h2>
+        <p>今日はすでに挑戦済みです。</p>
+        <p>明日また挑戦しよう！</p>
+
+        <button type="button" onClick={onBack}>
+          ← BATTLE MAP
+        </button>
+      </div>
+    </div>
+  );
+}
 
   if (finished) {
     return (
@@ -372,8 +440,8 @@ localStorage.setItem(
             type="button"
             onClick={playQuestion}
             disabled={
-              hasPlayed && !answered
-            }
+  playCount >= 2 && !answered
+}
             style={{
               fontSize: "20px",
               padding: "14px 30px",
