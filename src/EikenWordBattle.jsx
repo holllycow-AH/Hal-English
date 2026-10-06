@@ -1,6 +1,7 @@
 import { QUESTIONS } from "./data/battle/word/stage1Word";
 import { STAGE2_QUESTIONS } from "./data/battle/word/stage2Word";
 import { STAGE3_QUESTIONS } from "./data/battle/word/stage3Word";
+import { STAGE4_QUESTIONS } from "./data/battle/word/stage4Word";
 import { useState } from "react";
 import "./EikenTraining.css";
 
@@ -103,7 +104,9 @@ const speakEnglish = (text) => {
 
 export default function EikenWordBattle({ onBack, stage = 1 }) {
 const activeQuestions =
-  stage === 3
+  stage === 4
+    ? STAGE4_QUESTIONS
+    : stage === 3
     ? STAGE3_QUESTIONS
     : stage === 2
     ? STAGE2_QUESTIONS

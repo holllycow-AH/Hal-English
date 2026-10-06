@@ -24,6 +24,14 @@ import {
   STAGE3_LISTENING_POOL,
   STAGE3_READING_POOL,
 } from "./data/final/stage3Final";
+
+import {
+  STAGE4_WORD_POOL,
+  STAGE4_PHRASE_POOL,
+  STAGE4_SENTENCE_POOL,
+  STAGE4_LISTENING_POOL,
+  STAGE4_READING_POOL,
+} from "./data/final/stage4Final";
 // ========================================
 // SOUND
 // ========================================
@@ -226,35 +234,45 @@ function pickRandom(array, count) {
 
 function createFinalQuestions(stage) {
 const wordPool =
-  stage === 3
+  stage === 4
+    ? STAGE4_WORD_POOL
+    : stage === 3
     ? STAGE3_WORD_POOL
     : stage === 2
     ? STAGE2_WORD_POOL
     : WORD_POOL;
 
 const phrasePool =
-  stage === 3
+  stage === 4
+    ? STAGE4_PHRASE_POOL
+    : stage === 3
     ? STAGE3_PHRASE_POOL
     : stage === 2
     ? STAGE2_PHRASE_POOL
     : PHRASE_POOL;
 
 const sentencePool =
-  stage === 3
+  stage === 4
+    ? STAGE4_SENTENCE_POOL
+    : stage === 3
     ? STAGE3_SENTENCE_POOL
     : stage === 2
     ? STAGE2_SENTENCE_POOL
     : SENTENCE_POOL;
 
 const listeningPool =
-  stage === 3
+  stage === 4
+    ? STAGE4_LISTENING_POOL
+    : stage === 3
     ? STAGE3_LISTENING_POOL
     : stage === 2
     ? STAGE2_LISTENING_POOL
     : LISTENING_POOL;
 
 const readingPool =
-  stage === 3
+  stage === 4
+    ? STAGE4_READING_POOL
+    : stage === 3
     ? STAGE3_READING_POOL
     : stage === 2
     ? STAGE2_READING_POOL

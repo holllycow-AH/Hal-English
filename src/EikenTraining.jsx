@@ -2,9 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import "./EikenTraining.css";
 import EikenBattle from "./EikenBattle.jsx";
 import EikenMyPage from "./EikenMyPage.jsx";
-import { ROOKIE_STAGE1_DATA } from "./data/vocabulary/rookieStage1.js";
-import { ROOKIE_STAGE2_DATA } from "./data/vocabulary/rookieStage2.js";
-import { ROOKIE_STAGE3_DATA } from "./data/vocabulary/rookieStage3.js";
+
+import { ROOKIE_STAGES } from "./data/rookieStages.js";
 
 const SET_DATA = [
   {
@@ -2098,11 +2097,7 @@ const refs = [
 ];
 
 const activeStageData =
-  selectedStage === 3
-    ? ROOKIE_STAGE3_DATA
-    : selectedStage === 2
-    ? ROOKIE_STAGE2_DATA
-    : ROOKIE_STAGE1_DATA;
+  ROOKIE_STAGES[selectedStage] ?? ROOKIE_STAGES[1];
 
 const currentSetData =
   selectedSet === null
@@ -2312,9 +2307,19 @@ const stage3Laps = Array.from({ length: 5 }, (_, index) => {
     ) || 0
   );
 });
+const stage4Laps = Array.from({ length: 5 }, (_, index) => {
+  return (
+    Number(
+      localStorage.getItem(
+        `eiken-pre2-rookie-stage4-set${index + 1}`
+      )
+    ) || 0
+  );
+});
 const battleUnlocked = stage1Laps.every((laps) => laps >= 5);
 const stage2BattleUnlocked = stage2Laps.every((laps) => laps >= 5);
 const stage3BattleUnlocked = stage3Laps.every((laps) => laps >= 5);
+const stage4BattleUnlocked = stage4Laps.every((laps) => laps >= 5);
   return (
     <div className="eiken-app">
       <div className="rookie-map-title">
@@ -2494,32 +2499,36 @@ MY PAGE
                  <button
   type="button"
   className="next-run-button"
-  disabled={
-    (stageNumber === 2 && !battleUnlocked) ||
-    (stageNumber === 3 && !stage2BattleUnlocked) ||
-    stageNumber > 3
+disabled={
+  (stageNumber === 2 && !battleUnlocked) ||
+  (stageNumber === 3 && !stage2BattleUnlocked) ||
+  (stageNumber === 4 && !stage3BattleUnlocked) ||
+  stageNumber > 4
+}
+onClick={() => {
+  if (
+    (stageNumber === 2 && battleUnlocked) ||
+    (stageNumber === 3 && stage2BattleUnlocked) ||
+    (stageNumber === 4 && stage3BattleUnlocked)
+  ) {
+    setSelectedStage(stageNumber);
+    setSelectedSet(setNumber - 1);
   }
-  onClick={() => {
-    if (
-      (stageNumber === 2 && battleUnlocked) ||
-      (stageNumber === 3 && stage2BattleUnlocked)
-    ) {
-      setSelectedStage(stageNumber);
-      setSelectedSet(setNumber - 1);
-    }
-  }}
-  style={{
-    opacity:
-      (stageNumber === 2 && battleUnlocked) ||
-      (stageNumber === 3 && stage2BattleUnlocked)
-        ? 1
-        : 0.35,
-    cursor:
-      (stageNumber === 2 && battleUnlocked) ||
-      (stageNumber === 3 && stage2BattleUnlocked)
-        ? "pointer"
-        : "not-allowed",
-  }}
+}}
+ style={{
+  opacity:
+    (stageNumber === 2 && battleUnlocked) ||
+    (stageNumber === 3 && stage2BattleUnlocked) ||
+    (stageNumber === 4 && stage3BattleUnlocked)
+      ? 1
+      : 0.35,
+  cursor:
+    (stageNumber === 2 && battleUnlocked) ||
+    (stageNumber === 3 && stage2BattleUnlocked) ||
+    (stageNumber === 4 && stage3BattleUnlocked)
+      ? "pointer"
+      : "not-allowed",
+}}
 >
   SET {setNumber}
 </button>
@@ -2529,7 +2538,7 @@ MY PAGE
     fontSize: "20px",
     letterSpacing: "2px",
     whiteSpace: "nowrap",
-  opacity: stageNumber <= 3 ? 1 : 0.35,
+opacity: stageNumber <= 4 ? 1 : 0.35,
   }}
 >
   {[0, 1, 2, 3, 4].map((i) => {
@@ -2562,28 +2571,32 @@ MY PAGE
 disabled={
   (stageNumber === 2 && !stage2BattleUnlocked) ||
   (stageNumber === 3 && !stage3BattleUnlocked) ||
-  stageNumber > 3
+  (stageNumber === 4 && !stage4BattleUnlocked) ||
+  stageNumber > 4
 }
 onClick={() => {
-  if (
-    (stageNumber === 2 && stage2BattleUnlocked) ||
-    (stageNumber === 3 && stage3BattleUnlocked)
-  ) {
+if (
+  (stageNumber === 2 && stage2BattleUnlocked) ||
+  (stageNumber === 3 && stage3BattleUnlocked) ||
+  (stageNumber === 4 && stage4BattleUnlocked)
+) {
     setSelectedStage(stageNumber);
     setShowBattle(true);
   }
 }}
 style={{
-  opacity:
-    (stageNumber === 2 && stage2BattleUnlocked) ||
-    (stageNumber === 3 && stage3BattleUnlocked)
-      ? 1
-      : 0.35,
-  cursor:
-    (stageNumber === 2 && stage2BattleUnlocked) ||
-    (stageNumber === 3 && stage3BattleUnlocked)
-      ? "pointer"
-      : "not-allowed",
+opacity:
+  (stageNumber === 2 && stage2BattleUnlocked) ||
+  (stageNumber === 3 && stage3BattleUnlocked) ||
+  (stageNumber === 4 && stage4BattleUnlocked)
+    ? 1
+    : 0.35,
+cursor:
+  (stageNumber === 2 && stage2BattleUnlocked) ||
+  (stageNumber === 3 && stage3BattleUnlocked) ||
+  (stageNumber === 4 && stage4BattleUnlocked)
+    ? "pointer"
+    : "not-allowed",
 }}
   >
     ⚔
@@ -2595,12 +2608,18 @@ style={{
     style={{
       fontSize: "14px",
       fontWeight: "700",
-    opacity: stageNumber === 2 && stage2BattleUnlocked ? 1 : 0.35,
+opacity:
+  (stageNumber === 2 && stage2BattleUnlocked) ||
+  (stageNumber === 3 && stage3BattleUnlocked) ||
+  (stageNumber === 4 && stage4BattleUnlocked)
+    ? 1
+    : 0.35,
       whiteSpace: "nowrap",
     }}
   >
 {(stageNumber === 2 && stage2BattleUnlocked) ||
-(stageNumber === 3 && stage3BattleUnlocked)
+(stageNumber === 3 && stage3BattleUnlocked) ||
+(stageNumber === 4 && stage4BattleUnlocked)
   ? "READY!"
   : "🔒 LOCKED"}
   </div>
