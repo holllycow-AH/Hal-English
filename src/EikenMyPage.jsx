@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import EikenRankPage from "./EikenRankPage.jsx";
+import EikenMyWords from "./EikenMyWords.jsx";
 export default function EikenMyPage({ onBack }) {
   const [showRankPage, setShowRankPage] = useState(false);
+  const [showMyWords, setShowMyWords] = useState(false);
 
   const [name, setName] = useState(
 
@@ -330,6 +332,11 @@ const currentStage =
   }
 if (showRankPage) {
   return <EikenRankPage onBack={() => setShowRankPage(false)} />;
+}
+if (showMyWords) {
+  return (
+    <EikenMyWords onBack={() => setShowMyWords(false)} />
+  );
 }
  if (showDiaryBook) {
    return (
@@ -1161,6 +1168,7 @@ style={{
 >
   <button
     type="button"
+      onClick={() => setShowMyWords(true)}
     style={{
       padding: "10px 18px",
       fontSize: "16px",
@@ -1178,7 +1186,7 @@ style={{
       whiteSpace: "nowrap",
     }}
   >
-    up to 30.
+   Just You.
   </span>
 </div>
 
@@ -1195,15 +1203,7 @@ style={{
       width: "fit-content",
     }}
   >
-    <span
-      style={{
-        fontSize: "20px",
-        color: "#aaa",
-        whiteSpace: "nowrap",
-      }}
-    >
-      For fun!
-    </span>
+   
 
     <button
       type="button"
@@ -1221,6 +1221,15 @@ style={{
     >
       PUSH
     </button>
+     <span
+      style={{
+        fontSize: "20px",
+        color: "#aaa",
+        whiteSpace: "nowrap",
+      }}
+    >
+      for fun!
+    </span>
   </div>
 </div>
       {/* 下段：学習履歴を横幅いっぱいに2列表示 */}

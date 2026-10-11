@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ROOKIE_STAGE1_DATA } from "./data/vocabulary/rookieStage1.js";
 import { ROOKIE_STAGE2_DATA } from "./data/vocabulary/rookieStage2.js";
 import { ROOKIE_STAGE3_DATA } from "./data/vocabulary/rookieStage3.js";
+import { ROOKIE_STAGE4_DATA } from "./data/vocabulary/rookieStage4.js";
 export default function EikenRankPage({ onBack }) {
     const [wordRank, setWordRank] = useState(null);
     const [pinnedWords, setPinnedWords] = useState(() => {
@@ -149,7 +150,12 @@ const [showPinnedOnly, setShowPinnedOnly] = useState(false);
 >
 {[
   ...new Map(
-    [...ROOKIE_STAGE1_DATA, ...ROOKIE_STAGE2_DATA, ...ROOKIE_STAGE3_DATA]
+  [
+  ...ROOKIE_STAGE1_DATA,
+  ...ROOKIE_STAGE2_DATA,
+  ...ROOKIE_STAGE3_DATA,
+  ...ROOKIE_STAGE4_DATA,
+]
       .map((item) => [item.word, item])
   ).values()
 ]
@@ -439,7 +445,12 @@ const [showPinnedOnly, setShowPinnedOnly] = useState(false);
                 {/* PIN */}
                 <button
                   type="button"
+                  onClick={() => {
+  setShowPinnedOnly(true);
+  setWordRank(rank);
+}}
                   style={{
+                    
                     border: "1px solid #ccc",
                     borderRadius: "12px",
                     background: "#ffffff",
