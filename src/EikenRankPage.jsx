@@ -3,12 +3,15 @@ import { ROOKIE_STAGE1_DATA } from "./data/vocabulary/rookieStage1.js";
 import { ROOKIE_STAGE2_DATA } from "./data/vocabulary/rookieStage2.js";
 import { ROOKIE_STAGE3_DATA } from "./data/vocabulary/rookieStage3.js";
 import { ROOKIE_STAGE4_DATA } from "./data/vocabulary/rookieStage4.js";
+import { ROOKIE_STAGE5_DATA } from "./data/vocabulary/rookieStage5.js";
 export default function EikenRankPage({ onBack }) {
     const [wordRank, setWordRank] = useState(null);
-    const [pinnedWords, setPinnedWords] = useState(() => {
+
+const [pinnedWords, setPinnedWords] = useState(() => {
   const saved = localStorage.getItem("eiken-pre2-pinned-words");
   return saved ? JSON.parse(saved) : [];
 });
+
     const [openJapanese, setOpenJapanese] = useState(null);
     const [showPinGuide, setShowPinGuide] = useState(false);
 const [showPinnedOnly, setShowPinnedOnly] = useState(false);
@@ -155,6 +158,9 @@ const [showPinnedOnly, setShowPinnedOnly] = useState(false);
   ...ROOKIE_STAGE2_DATA,
   ...ROOKIE_STAGE3_DATA,
   ...ROOKIE_STAGE4_DATA,
+
+  ...ROOKIE_STAGE5_DATA,
+
 ]
       .map((item) => [item.word, item])
   ).values()

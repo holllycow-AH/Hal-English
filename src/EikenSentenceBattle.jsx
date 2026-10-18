@@ -2,6 +2,7 @@ import { QUESTIONS } from "./data/battle/sentence/stage1Sentence";
 import { STAGE2_QUESTIONS } from "./data/battle/sentence/stage2Sentence";
 import { STAGE3_QUESTIONS } from "./data/battle/sentence/stage3Sentence";
 import { STAGE4_QUESTIONS } from "./data/battle/sentence/stage4Sentence";
+import { STAGE5_QUESTIONS } from "./data/battle/sentence/stage5Sentence";
 import React, { useState } from "react";
 
 
@@ -122,14 +123,18 @@ const speakEnglish = (text) => {
 };
 
 export default function EikenSentenceBattle({ onBack, stage = 1 }) {
+
 const activeQuestions =
-  stage === 4
+  stage === 5
+    ? STAGE5_QUESTIONS
+    : stage === 4
     ? STAGE4_QUESTIONS
     : stage === 3
     ? STAGE3_QUESTIONS
     : stage === 2
     ? STAGE2_QUESTIONS
     : QUESTIONS;
+
   const [questionIndex, setQuestionIndex] = useState(0);
 
   const [selectedParts, setSelectedParts] =

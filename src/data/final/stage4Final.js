@@ -215,22 +215,24 @@ export const STAGE4_SENTENCE_POOL = [
   },
 
   {
-    id: "s4-final-sentence-save",
-    type: "SENTENCE",
-    skill: "save",
-    translation:
-      "私は新しい自転車を買うためにお金を貯めています。",
-    parts: [
-      "for a new bicycle",
-      "I am saving money",
-      "to buy",
-    ],
-    answer: [
-      "I am saving money",
-      "to buy",
-      "for a new bicycle",
-    ],
-  },
+ 
+  id: "s4-final-sentence-save",
+  type: "SENTENCE",
+  skill: "save",
+  translation:
+    "私は新しい自転車を買うためにお金を貯めています。",
+  parts: [
+    "a new bicycle",
+    "I am saving money",
+    "to buy",
+  ],
+  answer: [
+    "I am saving money",
+    "to buy",
+    "a new bicycle",
+  ],
+},
+
 
   {
     id: "s4-final-sentence-forget",

@@ -32,6 +32,13 @@ import {
   STAGE4_LISTENING_POOL,
   STAGE4_READING_POOL,
 } from "./data/final/stage4Final";
+import {
+  STAGE5_WORD_POOL,
+  STAGE5_PHRASE_POOL,
+  STAGE5_SENTENCE_POOL,
+  STAGE5_LISTENING_POOL,
+  STAGE5_READING_POOL,
+} from "./data/final/stage5Final";
 // ========================================
 // SOUND
 // ========================================
@@ -234,16 +241,19 @@ function pickRandom(array, count) {
 
 function createFinalQuestions(stage) {
 const wordPool =
-  stage === 4
+  stage === 5
+    ? STAGE5_WORD_POOL
+    : stage === 4
     ? STAGE4_WORD_POOL
     : stage === 3
     ? STAGE3_WORD_POOL
     : stage === 2
     ? STAGE2_WORD_POOL
     : WORD_POOL;
-
 const phrasePool =
-  stage === 4
+  stage === 5
+    ? STAGE5_PHRASE_POOL
+    : stage === 4
     ? STAGE4_PHRASE_POOL
     : stage === 3
     ? STAGE3_PHRASE_POOL
@@ -252,7 +262,9 @@ const phrasePool =
     : PHRASE_POOL;
 
 const sentencePool =
-  stage === 4
+  stage === 5
+    ? STAGE5_SENTENCE_POOL
+    : stage === 4
     ? STAGE4_SENTENCE_POOL
     : stage === 3
     ? STAGE3_SENTENCE_POOL
@@ -261,7 +273,9 @@ const sentencePool =
     : SENTENCE_POOL;
 
 const listeningPool =
-  stage === 4
+  stage === 5
+    ? STAGE5_LISTENING_POOL
+    : stage === 4
     ? STAGE4_LISTENING_POOL
     : stage === 3
     ? STAGE3_LISTENING_POOL
@@ -269,14 +283,18 @@ const listeningPool =
     ? STAGE2_LISTENING_POOL
     : LISTENING_POOL;
 
+
 const readingPool =
-  stage === 4
+  stage === 5
+    ? STAGE5_READING_POOL
+    : stage === 4
     ? STAGE4_READING_POOL
     : stage === 3
     ? STAGE3_READING_POOL
     : stage === 2
     ? STAGE2_READING_POOL
     : READING_POOL;
+
   
   // 正解の単語はそのままに、選択肢の表示順だけをランダムにする
   const shuffleChoices = (questions) =>
@@ -535,9 +553,18 @@ function goNext() {
     questionIndex ===
     questions.length - 1
   ) {
-    const finalScore = Math.round(
-      (correctCount / TOTAL_POINTS) * 100
-    );
+ const totalPoints = questions.reduce(
+  (total, question) =>
+    total +
+    (question.type === "READING"
+      ? question.questions.length
+      : 1),
+  0
+);
+
+const finalScore = Math.round(
+  (correctCount / totalPoints) * 100
+);
 
     const oldHistory = JSON.parse(
       localStorage.getItem("eikenBattleHistory") || "[]"
@@ -582,9 +609,16 @@ const playerName =
       behavior: "smooth",
     });
   }
-
+const totalPoints = questions.reduce(
+  (total, question) =>
+    total +
+    (question.type === "READING"
+      ? question.questions.length
+      : 1),
+  0
+);
   const score = Math.round(
-    (correctCount / TOTAL_POINTS) * 100
+   {correctCount} / {totalPoints}* 100
   );
 
   // ========================================

@@ -2,6 +2,7 @@ import { QUESTIONS } from "./data/battle/listening/stage1Listening";
 import { STAGE2_QUESTIONS } from "./data/battle/listening/stage2Listening";
 import { STAGE3_QUESTIONS } from "./data/battle/listening/stage3Listening";
 import { STAGE4_QUESTIONS } from "./data/battle/listening/stage4Listening";
+import { STAGE5_QUESTIONS } from "./data/battle/listening/stage5Listening";
 
 import React, { useState } from "react";
 
@@ -35,15 +36,17 @@ const [battleStarted, setBattleStarted] = useState(false);
 const alreadyPlayedToday =
   lastCompletedDate === today && !battleStarted;
 
-
 const activeQuestions =
-  stage === 4
+  stage === 5
+    ? STAGE5_QUESTIONS
+    : stage === 4
     ? STAGE4_QUESTIONS
     : stage === 3
     ? STAGE3_QUESTIONS
     : stage === 2
     ? STAGE2_QUESTIONS
     : QUESTIONS;
+
 const question = activeQuestions[questionIndex];
 async function playCorrectSound() {
   const AudioContext =

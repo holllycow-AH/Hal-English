@@ -430,18 +430,7 @@ if (showMyWords) {
         }}
 
       >
-<button
-  type="button"
-  onClick={onBack}
-  style={{
-    position: "absolute",
-    left: "10px",
-    top: "50%",
-    transform: "translateY(-50%)",
-  }}
->
-  ← BACK
-</button>
+
         <h1
 
           style={{
@@ -454,7 +443,7 @@ if (showMyWords) {
 
         >
 
-          {name ? `${name}'s Page` : "MY PAGE"}
+HAL ENGLISH　英⚔️　Pre 2
 
         </h1>
 
@@ -480,54 +469,7 @@ if (showMyWords) {
 
         >
 
-         <button
-  type="button"
-  onClick={() => {
-  setShowRankPage(true);
-}}
-  style={{
-    border: "1px solid #ccc",
-    borderRadius: "12px",
-    background: "#ffffff",
-    color: "#222222",
-    padding: "9px 16px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    whiteSpace: "nowrap",
-  }}
->
-  <div
-    style={{
-      fontSize: "13px",
-      fontWeight: "800",
-      color: "#777",
-      paddingRight: "12px",
-      borderRight: "1px solid #ddd",
-    }}
-  >
-    RANK
-  </div>
-
-  <div
-    style={{
-      fontSize: "17px",
-      fontWeight: "800",
-    }}
-  >
-    🗡 ROOKIE
-  </div>
-
-  <div
-    style={{
-      fontSize: "13px",
-      color: "#666",
-    }}
-  >
-    STAGE {currentStage}
-  </div>
-</button>
+       
         </div>
 
       </div>
@@ -550,11 +492,15 @@ if (showMyWords) {
 
             background: "white",
 
+            transform: "translateY(-45px)",
+
           }}
 
         >
 
-          <h3 style={{ marginTop: 0 }}>NAME</h3>
+<h3 style={{ marginTop: 0, fontSize: " 25px" }}>
+  {name ? `${name}'s Page` : "MY PAGE"}
+</h3>
 
           {!name || editing ? (
 
@@ -614,23 +560,7 @@ if (showMyWords) {
 
             <>
 
-              <div
-
-                style={{
-
-                  fontSize: "24px",
-
-                  fontWeight: "bold",
-
-                  margin: "15px 0",
-
-                }}
-
-              >
-
-                 {name}
-
-              </div>
+             
 
               <button
 
@@ -653,6 +583,56 @@ if (showMyWords) {
             </>
 
           )}
+  
+<button
+  type="button"
+  onClick={() => setShowRankPage(true)}
+  style={{
+    width: "100%",
+    boxSizing: "border-box",
+    marginTop: "12px",
+    padding: "12px",
+    border: "1px solid #ddd",
+    borderRadius: "12px",
+    background: "#f8fafc",
+    color: "#222",
+    cursor: "pointer",
+    textAlign: "left",
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+  }}
+>
+  <div
+    style={{
+      fontSize: "11px",
+      fontWeight: "bold",
+      color: "#888",
+    }}
+  >
+    CURRENT RANK
+  </div>
+
+  <div
+    style={{
+      fontSize: "17px",
+      fontWeight: "800",
+      whiteSpace: "nowrap",
+    }}
+  >
+    ⚔ ROOKIE
+  </div>
+
+  <div
+    style={{
+      fontSize: "12px",
+      fontWeight: "bold",
+      color: "#666",
+    }}
+  >
+    STAGE {currentStage} →
+  </div>
+</button>
 
           {/* TRAINING集計 */}
 
@@ -660,7 +640,8 @@ if (showMyWords) {
 
             style={{
 
-              marginTop: "20px",
+    
+　　　　　　　marginTop: "25px",　
 
               border: "1px solid #ddd",
 
@@ -1145,49 +1126,49 @@ style={{
       </div>
 {/* MY WORDS ＋ FOR FUN */}
 <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: "28px",
-    margin: "-70px 250px 17px 250px",
-  }}
+style={{
+  display: "flex",
+  alignItems: "center",
+  gap: "20px",
+margin: "-140px 0 20px 280px",
+}}
 >
+  <button
+  type="button"
+  onClick={onBack}
+style={{
+  fontSize: "18px",
+  fontWeight: "bold",
+  padding: "18px 24px",
+  width: "180px",
+  whiteSpace: "nowrap",
+}}
+>
+  TRAINING
+</button>
   {/* MY WORDS */}
 {/* MY WORDS */}
 <div
   style={{
     display: "flex",
     alignItems: "center",
-    gap: "12px",
-    padding: "18px 14px",
-    background: "white",
-    border: "1px solid #ddd",
-    borderRadius: "14px",
-    width: "fit-content",
   }}
 >
   <button
     type="button"
       onClick={() => setShowMyWords(true)}
-    style={{
-      padding: "10px 18px",
-      fontSize: "16px",
-      fontWeight: "bold",
-      whiteSpace: "nowrap",
-    }}
+   style={{
+  padding: "18px 24px",
+  width: "180px",
+  fontSize: "18px",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+}}
   >
     MY WORDS
   </button>
 
-  <span
-    style={{
-      fontSize: "16px",
-      color: "#888",
-      whiteSpace: "nowrap",
-    }}
-  >
-   Just You.
-  </span>
+
 </div>
 
   {/* FOR FUN */}
@@ -1196,10 +1177,7 @@ style={{
       display: "flex",
       alignItems: "center",
       gap: "18px",
-      padding: "14px 22px",
-      background: "white",
-      border: "1px solid #ddd",
-      borderRadius: "14px",
+    padding: "14px 0px",
       width: "fit-content",
     }}
   >
@@ -1208,8 +1186,9 @@ style={{
     <button
       type="button"
 style={{
-  padding: "13px 28px",
-  fontSize: "16px",
+  padding: "18px 24px",
+width: "180px",
+fontSize: "18px",
   fontWeight: "bold",
   whiteSpace: "nowrap",
   background: "#ef4444",
@@ -1221,20 +1200,12 @@ style={{
     >
       PUSH
     </button>
-     <span
-      style={{
-        fontSize: "20px",
-        color: "#aaa",
-        whiteSpace: "nowrap",
-      }}
-    >
-      for fun!
-    </span>
+     
   </div>
 </div>
       {/* 下段：学習履歴を横幅いっぱいに2列表示 */}
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "30px", alignItems: "start", marginTop: "24px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "28px", marginTop: "20px" }}>
 
         {/* 中央：TRAINING履歴 */}
 
@@ -1244,8 +1215,10 @@ style={{
 
             border: "1px solid #ddd",
 
-            borderRadius: "14px",
+　　　　　　　marginTop: "60px",
 
+            borderRadius: "14px",
+            
             padding: "25px",
 
            height: "260px",
@@ -1257,6 +1230,8 @@ style={{
             textAlign: "left",
 
             boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+
+            transform: "translateY(-57px)",
 
           }}
 
@@ -1330,6 +1305,8 @@ style={{
 
             padding: "25px",
 
+            marginTop: "60px",
+
             height: "260px",
 
             overflowY: "auto",
@@ -1339,6 +1316,8 @@ style={{
             textAlign: "left",
 
             boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+
+            transform: "translateY(-57px)",
 
           }}
 
@@ -1419,25 +1398,6 @@ style={{
 
       </div>
 
-      <div
-
-        style={{
-
-          marginTop: "30px",
-
-          textAlign: "center",
-
-        }}
-
-      >
-
-        <button onClick={onBack}>
-
-         ← BACK
-
-        </button>
-
-      </div>
 
     </div>
 

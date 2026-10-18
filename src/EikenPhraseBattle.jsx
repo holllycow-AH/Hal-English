@@ -2,6 +2,7 @@ import { QUESTIONS } from "./data/battle/phrase/stage1Phrase";
 import { STAGE2_QUESTIONS } from "./data/battle/phrase/stage2Phrase";
 import { STAGE3_QUESTIONS } from "./data/battle/phrase/stage3Phrase";
 import { STAGE4_QUESTIONS } from "./data/battle/phrase/stage4Phrase";
+import { STAGE5_QUESTIONS } from "./data/battle/phrase/stage5Phrase";
 import React, { useState } from "react";
 
 
@@ -167,14 +168,18 @@ async function playWrongSound() {
 };
 
 export default function EikenPhraseBattle({ onBack, stage = 1 }) {
+
 const activeQuestions =
-  stage === 4
+  stage === 5
+    ? STAGE5_QUESTIONS
+    : stage === 4
     ? STAGE4_QUESTIONS
     : stage === 3
     ? STAGE3_QUESTIONS
     : stage === 2
     ? STAGE2_QUESTIONS
     : QUESTIONS;
+
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedParts, setSelectedParts] = useState([]);
   const [answered, setAnswered] = useState(false);
@@ -226,17 +231,33 @@ setBattleStarted(true);
   }
     const selectedWords = selectedParts.map((item) => item.part);
 
-    const correct =
-      selectedWords.length === question.answer.length &&
-      selectedWords.every(
-        (word, index) => word === question.answer[index]
-      );
+    const normalizePart = (text) =>
+  text
+    .toLowerCase()
+    .replace(/[.,!?]/g, "")
+    .trim();
+
+const validAnswers = question.answers || [question.answer];
+
+const correct = validAnswers.some(
+  (answerPattern) =>
+    selectedWords.length === answerPattern.length &&
+    selectedWords.every(
+      (part, index) =>
+        normalizePart(part) ===
+        normalizePart(answerPattern[index])
+    )
+);
 
     setIsCorrect(correct);
     setAnswered(true);
 
 const correctEnglish =
-  question.completed || question.answer.join(" ");
+  correct
+    ? question.type === "context" && question.completed
+      ? question.completed
+      : selectedWords.join(" ")
+    : question.completed || question.answer.join(" ");
 
 if (correct) {
   setCorrectCount((prev) => prev + 1);
