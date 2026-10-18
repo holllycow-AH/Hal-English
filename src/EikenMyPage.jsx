@@ -1142,6 +1142,11 @@ style={{
   padding: "18px 24px",
   width: "180px",
   whiteSpace: "nowrap",
+  background: "#111827",
+  color: "white",
+  border: "none",
+  borderRadius: "14px",
+  cursor: "pointer",
 }}
 >
   TRAINING
@@ -1163,6 +1168,11 @@ style={{
   fontSize: "18px",
   fontWeight: "bold",
   whiteSpace: "nowrap",
+  background: "#111827",
+  color: "white",
+  border: "none",
+  borderRadius: "14px",
+  cursor: "pointer",
 }}
   >
     MY WORDS
