@@ -1253,53 +1253,59 @@ fontSize: "18px",
 
           </h2>
 
-          {trainingHistory.length === 0 ? (
+{(() => {
+  const combinedHistory = [
+    ...trainingHistory.map((record) => ({
+      ...record,
+      type: "training",
+      timestamp: record.date,
+    })),
+    ...diaryEntries.map((entry) => ({
+      id: `diary-${entry.id}`,
+      type: "diary",
+      timestamp: entry.createdAt,
+    })),
+  ]
+    .filter((record) => record.timestamp)
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() -
+        new Date(a.timestamp).getTime()
+    );
 
-            <p style={{ color: "#777" }}>
+  if (combinedHistory.length === 0) {
+    return (
+      <p style={{ color: "#777" }}>
+        まだTRAINING記録はありません
+      </p>
+    );
+  }
 
-              まだTRAINING記録はありません
-
-            </p>
-
-          ) : (
-
-            trainingHistory.map((record) => (
-
-              <div
-
-                key={record.id}
-
-                style={{
-
-                  padding: "9px 0",
-
-                  borderBottom: "1px solid #ddd",
-
-                  fontSize: "13px",
-
-                }}
-
-              >
-
-                {formatDate(record.date)}
-
-                {" ｜ "}
-
-                {record.rank} STAGE {record.stage}
-
-                {" ｜ "}
-
-                SET {record.set}
-
-                {" ｜ "}
-
-                ★ {record.lap}
-
-              </div>
-
-            ))
-
-          )}
+  return combinedHistory.map((record) => (
+    <div
+      key={record.id}
+      style={{
+        padding: "9px 0",
+        borderBottom: "1px solid #ddd",
+        fontSize: "13px",
+      }}
+    >
+      {formatDate(record.timestamp)}
+      {" ｜ "}
+      {record.type === "diary" ? (
+        <strong>📖 MY DIARY</strong>
+      ) : (
+        <>
+          {record.rank} STAGE {record.stage}
+          {" ｜ "}
+          SET {record.set}
+          {" ｜ "}
+          ★ {record.lap}
+        </>
+      )}
+    </div>
+  ));
+})()}
 
         </div>
 
