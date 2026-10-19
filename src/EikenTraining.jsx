@@ -200,6 +200,7 @@ const [showMyPage, setShowMyPage] = useState(true);
 const [showBattle, setShowBattle] = useState(false);
 
 useEffect(() => {
+  
   if (selectedSet === null) {
     setLap(0);
     setResumeLoaded(false);
@@ -423,69 +424,42 @@ if (showMyPage) {
   );
 }
 
-if (selectedSet === null) {
-
-const setCount = Math.ceil(activeStageData.length / 5);
-
-  const stage1Laps = Array.from({ length: 5 }, (_, index) => {
+const GRADE_LABEL = "準2級";
+const RANK_LABEL = "ROOKIE";
+const getStageLaps = (stageNumber) => {
+  return Array.from({ length: 5 }, (_, index) => {
     return (
       Number(
         localStorage.getItem(
-          `eiken-pre2-rookie-stage1-set${index + 1}`
+          `eiken-pre2-rookie-stage${stageNumber}-set${index + 1}`
         )
       ) || 0
     );
   });
+};
+if (selectedSet === null) {
 
-const stage2Laps = Array.from({ length: 5 }, (_, index) => {
-  return (
-    Number(
-      localStorage.getItem(
-        `eiken-pre2-rookie-stage2-set${index + 1}`
-      )
-    ) || 0
-  );
-});
-const stage3Laps = Array.from({ length: 5 }, (_, index) => {
-  return (
-    Number(
-      localStorage.getItem(
-        `eiken-pre2-rookie-stage3-set${index + 1}`
-      )
-    ) || 0
-  );
-});
-const stage4Laps = Array.from({ length: 5 }, (_, index) => {
-  return (
-    Number(
-      localStorage.getItem(
-        `eiken-pre2-rookie-stage4-set${index + 1}`
-      )
-    ) || 0
-  );
-});
-const stage5Laps = Array.from({ length: 5 }, (_, index) => {
-  return (
-    Number(
-      localStorage.getItem(
-        `eiken-pre2-rookie-stage5-set${index + 1}`
-      )
-    ) || 0
-  );
-});
+const setCount = Math.ceil(activeStageData.length / 5);
 
-const stage5BattleUnlocked = stage5Laps.every(
-  (laps) => laps >= 5
-);
-const battleUnlocked = stage1Laps.every((laps) => laps >= 5);
-const stage2BattleUnlocked = stage2Laps.every((laps) => laps >= 5);
-const stage3BattleUnlocked = stage3Laps.every((laps) => laps >= 5);
-const stage4BattleUnlocked = stage4Laps.every((laps) => laps >= 5);
+ const stage1Laps = getStageLaps(1);
+const stage2Laps = getStageLaps(2);
+const stage3Laps = getStageLaps(3);
+const stage4Laps = getStageLaps(4);
+const stage5Laps = getStageLaps(5);
+
+const isBattleUnlocked = (stageLaps) =>
+  stageLaps.every((laps) => laps >= 5);
+
+const battleUnlocked = isBattleUnlocked(stage1Laps);
+const stage2BattleUnlocked = isBattleUnlocked(stage2Laps);
+const stage3BattleUnlocked = isBattleUnlocked(stage3Laps);
+const stage4BattleUnlocked = isBattleUnlocked(stage4Laps);
+const stage5BattleUnlocked = isBattleUnlocked(stage5Laps);
   return (
     <div className="eiken-app">
-      <div className="rookie-map-title">
-        🗡️ ROOKIE TRAINING 🏋️
-      </div>
+<div className="rookie-map-title">
+  🗡️ {RANK_LABEL} TRAINING 🏋️
+</div>
 
       <button
   type="button"
@@ -808,7 +782,7 @@ opacity:
 if (setFinished) {
 return (
     <div className="eiken-app">
-   <div className="rookie-map-title">🗡️ ROOKIE TRAINING 🏋️</div>
+<div className="rookie-map-title">🗡️ {RANK_LABEL} TRAINING 🏋️</div>
 <button
   type="button"
   onClick={() => setShowMyPage(true)}
@@ -844,7 +818,7 @@ return (
 </h1>
 
         <div className="progress-location">
-準2級 / ROOKIE / STAGE {selectedStage} / SET {selectedSet + 1}
+{GRADE_LABEL} / {RANK_LABEL} / STAGE {selectedStage} / SET {selectedSet + 1}
         </div>
 
         <div className="stars">
@@ -917,9 +891,9 @@ return (
 
     <header className="eiken-header">
         <div>
-          <div className="rank-name">ROOKIE</div>
+         <div className="rank-name">{RANK_LABEL}</div>
           <div className="location-line">
-準2級　/　STAGE {selectedStage}　/　SET {selectedSet + 1}
+{GRADE_LABEL}　/　STAGE {selectedStage}　/　SET {selectedSet + 1}
           </div>
         </div>
 
