@@ -1,44 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  WORD_POOL,
-  PHRASE_POOL,
-  SENTENCE_POOL,
-  LISTENING_POOL,
-  READING_POOL,
-} from "./data/final/stage1Final";
-
-import {
-  STAGE2_WORD_POOL,
-  STAGE2_PHRASE_POOL,
-  STAGE2_SENTENCE_POOL,
-  STAGE2_LISTENING_POOL,
-  STAGE2_READING_POOL,
-} from "./data/final/stage2Final";
-
-
-import {
-  STAGE3_WORD_POOL,
-  STAGE3_PHRASE_POOL,
-  STAGE3_SENTENCE_POOL,
-  STAGE3_LISTENING_POOL,
-  STAGE3_READING_POOL,
-} from "./data/final/stage3Final";
-
-import {
-  STAGE4_WORD_POOL,
-  STAGE4_PHRASE_POOL,
-  STAGE4_SENTENCE_POOL,
-  STAGE4_LISTENING_POOL,
-  STAGE4_READING_POOL,
-} from "./data/final/stage4Final";
-import {
-  STAGE5_WORD_POOL,
-  STAGE5_PHRASE_POOL,
-  STAGE5_SENTENCE_POOL,
-  STAGE5_LISTENING_POOL,
-  STAGE5_READING_POOL,
-} from "./data/final/stage5Final";
+import { FINAL_BATTLE_POOLS } from "./data/final/index.js";
 // ========================================
 // SOUND
 // ========================================
@@ -240,60 +202,13 @@ function pickRandom(array, count) {
 
 
 function createFinalQuestions(stage) {
-const wordPool =
-  stage === 5
-    ? STAGE5_WORD_POOL
-    : stage === 4
-    ? STAGE4_WORD_POOL
-    : stage === 3
-    ? STAGE3_WORD_POOL
-    : stage === 2
-    ? STAGE2_WORD_POOL
-    : WORD_POOL;
-const phrasePool =
-  stage === 5
-    ? STAGE5_PHRASE_POOL
-    : stage === 4
-    ? STAGE4_PHRASE_POOL
-    : stage === 3
-    ? STAGE3_PHRASE_POOL
-    : stage === 2
-    ? STAGE2_PHRASE_POOL
-    : PHRASE_POOL;
+  const pools = FINAL_BATTLE_POOLS[stage] ?? FINAL_BATTLE_POOLS[1];
 
-const sentencePool =
-  stage === 5
-    ? STAGE5_SENTENCE_POOL
-    : stage === 4
-    ? STAGE4_SENTENCE_POOL
-    : stage === 3
-    ? STAGE3_SENTENCE_POOL
-    : stage === 2
-    ? STAGE2_SENTENCE_POOL
-    : SENTENCE_POOL;
-
-const listeningPool =
-  stage === 5
-    ? STAGE5_LISTENING_POOL
-    : stage === 4
-    ? STAGE4_LISTENING_POOL
-    : stage === 3
-    ? STAGE3_LISTENING_POOL
-    : stage === 2
-    ? STAGE2_LISTENING_POOL
-    : LISTENING_POOL;
-
-
-const readingPool =
-  stage === 5
-    ? STAGE5_READING_POOL
-    : stage === 4
-    ? STAGE4_READING_POOL
-    : stage === 3
-    ? STAGE3_READING_POOL
-    : stage === 2
-    ? STAGE2_READING_POOL
-    : READING_POOL;
+  const wordPool = pools.word;
+  const phrasePool = pools.phrase;
+  const sentencePool = pools.sentence;
+  const listeningPool = pools.listening;
+  const readingPool = pools.reading;
 
   
   // 正解の単語はそのままに、選択肢の表示順だけをランダムにする
@@ -617,9 +532,9 @@ const totalPoints = questions.reduce(
       : 1),
   0
 );
-  const score = Math.round(
-   {correctCount} / {totalPoints}* 100
-  );
+const score = Math.round(
+  (correctCount / totalPoints) * 100
+);
 
   // ========================================
   // RESULT
@@ -649,7 +564,7 @@ const totalPoints = questions.reduce(
               margin: "28px 0 8px",
             }}
           >
-            {correctCount} / {TOTAL_POINTS}
+          {correctCount} / {totalPoints}
           </div>
 
           <div
