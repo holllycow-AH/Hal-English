@@ -1,23 +1,10 @@
-import { PASSAGES } from "./data/battle/reading/stage1Reading";
-import { STAGE2_PASSAGES } from "./data/battle/reading/stage2Reading";
-import { STAGE3_PASSAGES } from "./data/battle/reading/stage3Reading";
-import { STAGE4_PASSAGES } from "./data/battle/reading/stage4Reading";
-import { STAGE5_PASSAGES } from "./data/battle/reading/stage5Reading";
+import { READING_BATTLE_PASSAGES } from "./data/battle/reading/index.js";
 import React, { useState } from "react";
 
 
 export default function EikenReadingBattle({ onBack, stage = 1 }) {
 
-const activePassages =
-  stage === 5
-    ? STAGE5_PASSAGES
-    : stage === 4
-    ? STAGE4_PASSAGES
-    : stage === 3
-    ? STAGE3_PASSAGES
-    : stage === 2
-    ? STAGE2_PASSAGES
-    : PASSAGES;
+const activePassages = READING_BATTLE_PASSAGES[stage] ?? READING_BATTLE_PASSAGES[1];
 
   const [passageIndex, setPassageIndex] = useState(0);
   const [answers, setAnswers] = useState([null, null, null]);
