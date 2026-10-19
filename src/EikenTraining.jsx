@@ -5,7 +5,6 @@ import EikenMyPage from "./EikenMyPage.jsx";
 
 import { ROOKIE_STAGES } from "./data/rookieStages.js";
 
-const SET_DATA = ROOKIE_STAGES[1];
 
 const normalizeText = (text) => {
   return text
@@ -258,7 +257,7 @@ const currentSetData =
 
 const card =
   selectedSet === null
-    ? SET_DATA[0]
+  ? activeStageData[0]
     : currentSetData[cardIndex];
 
   const items = [
@@ -426,7 +425,7 @@ if (showMyPage) {
 
 if (selectedSet === null) {
 
-  const setCount = Math.ceil(SET_DATA.length / 5);
+const setCount = Math.ceil(activeStageData.length / 5);
 
   const stage1Laps = Array.from({ length: 5 }, (_, index) => {
     return (
@@ -834,7 +833,15 @@ return (
   MY PAGE
 </button>
       <div className="progress-screen">
-        <h1>SET {selectedSet + 1} COMPLETE</h1>
+      <h1
+  style={{
+    fontSize: "24px",
+    fontWeight: "700",
+    paddingTop: "15px",
+  }}
+>
+  SET {selectedSet + 1} COMPLETE
+</h1>
 
         <div className="progress-location">
 準2級 / ROOKIE / STAGE {selectedStage} / SET {selectedSet + 1}
@@ -875,11 +882,7 @@ return (
           ← SET選択へ戻る
         </button>
 
-        {lap >= 5 && (
-          <div className="set-mastered">
-            SET {selectedSet + 1} ★★★★★
-          </div>
-        )}
+
       </div>
     </div>
   );
@@ -929,7 +932,7 @@ return (
         <div
           className="top-progress-fill"
           style={{
-            width: `${((cardIndex + lineIndex / 4) / SET_DATA.length) * 100}%`,
+          width: `${((cardIndex + lineIndex / 4) / currentSetData.length) * 100}%`,
           }}
         />
       </div>
