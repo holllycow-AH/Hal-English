@@ -1,8 +1,4 @@
-import { QUESTIONS } from "./data/battle/phrase/stage1Phrase";
-import { STAGE2_QUESTIONS } from "./data/battle/phrase/stage2Phrase";
-import { STAGE3_QUESTIONS } from "./data/battle/phrase/stage3Phrase";
-import { STAGE4_QUESTIONS } from "./data/battle/phrase/stage4Phrase";
-import { STAGE5_QUESTIONS } from "./data/battle/phrase/stage5Phrase";
+import { PHRASE_BATTLE_QUESTIONS } from "./data/battle/phrase/index.js";
 import React, { useState } from "react";
 
 
@@ -169,16 +165,7 @@ async function playWrongSound() {
 
 export default function EikenPhraseBattle({ onBack, stage = 1 }) {
 
-const activeQuestions =
-  stage === 5
-    ? STAGE5_QUESTIONS
-    : stage === 4
-    ? STAGE4_QUESTIONS
-    : stage === 3
-    ? STAGE3_QUESTIONS
-    : stage === 2
-    ? STAGE2_QUESTIONS
-    : QUESTIONS;
+const activeQuestions = PHRASE_BATTLE_QUESTIONS[stage] ?? PHRASE_BATTLE_QUESTIONS[1];
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedParts, setSelectedParts] = useState([]);
