@@ -652,22 +652,8 @@ onClick={() => {
   }
 }}
 style={{
-  opacity:
-    (stageNumber === 1 ||
-      (stageNumber === 2 && battleUnlocked) ||
-      (stageNumber === 3 && stage2BattleUnlocked) ||
-      (stageNumber === 4 && stage3BattleUnlocked) ||
-      (stageNumber === 5 && stage4BattleUnlocked))
-      ? 1
-      : 0.35,
-  cursor:
-    (stageNumber === 1 ||
-      (stageNumber === 2 && battleUnlocked) ||
-      (stageNumber === 3 && stage2BattleUnlocked) ||
-      (stageNumber === 4 && stage3BattleUnlocked) ||
-      (stageNumber === 5 && stage4BattleUnlocked))
-      ? "pointer"
-      : "not-allowed",
+  opacity: isStageUnlocked(stageNumber) ? 1 : 0.35,
+  cursor: isStageUnlocked(stageNumber) ? "pointer" : "not-allowed",
 }}
 >
   SET {setNumber}
@@ -678,7 +664,7 @@ style={{
     fontSize: "20px",
     letterSpacing: "2px",
     whiteSpace: "nowrap",
-opacity: stageNumber <= 5 ? 1 : 0.35,
+opacity: isStageUnlocked(stageNumber) ? 1 : 0.35,
   }}
 >
   {[0, 1, 2, 3, 4].map((i) => {
