@@ -4,6 +4,7 @@
 
 body {
   margin: 0;
+  font-family: system-ui, sans-serif;
 }
 
 .eiken-app {
@@ -311,4 +312,9 @@ button {
 
 button:hover {
   opacity: 0.9;
+}
+/* HAL ENGLISH 共通見出しフォント */
+.hal-heading {
+  font-family: "Arial Black", Arial, sans-serif;
+  font-weight: 900;
 }

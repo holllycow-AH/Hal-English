@@ -430,18 +430,16 @@ if (showMyWords) {
         }}
 
       >
-
-        <h1
-
-          style={{
-
-            textAlign: "center",
-
-            margin: 0,
-
-          }}
-
-        >
+<h1
+  style={{
+    textAlign: "center",
+    margin: 0,
+    fontFamily: '"Arial Black", "Arial", sans-serif',
+    fontWeight: 900,
+    fontSize: "40px",
+    letterSpacing: "-0.5px",
+  }}
+>
 
 HAL ENGLISH　英⚔️　Pre 2
 
