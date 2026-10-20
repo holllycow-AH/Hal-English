@@ -237,7 +237,7 @@ const resumeKey =
   setCompletedLines([false, false, false, false]);
   setSetFinished(false);
   setResumeLoaded(true);
-}, [selectedSet]);
+}, [selectedStage, selectedSet]);
 const refs = [
   useRef(null),
   useRef(null),
